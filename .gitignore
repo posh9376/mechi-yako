@@ -218,3 +218,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local planning docs (not part of the submission)
+Mechi_Yako_Build_Plan.docx
+**/Mechi_Yako_Build_Plan.docx
