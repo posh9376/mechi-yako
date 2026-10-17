@@ -8,18 +8,13 @@ import time
 from pathlib import Path
 from typing import Any, Callable, Iterable
 
+from pipeline.clock import parse_clock
 from pipeline.queue import EventSink, InProcessEventQueue
 
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_MATCH = ROOT / "data" / "matches" / "m-demo-001.json"
 
-
-def parse_clock(t: str) -> int:
-    """Convert `M:SS` / `MM:SS` match clock to seconds from 0:00."""
-    parts = t.split(":")
-    if len(parts) != 2:
-        raise ValueError(f"invalid clock {t!r}")
-    return int(parts[0]) * 60 + int(parts[1])
+__all__ = ["MatchReplay", "load_match", "parse_clock"]
 
 
 def load_match(path: str | Path) -> dict[str, Any]:
