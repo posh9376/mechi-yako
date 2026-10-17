@@ -1,0 +1,1921 @@
+{
+  "schema_version": "1.0",
+  "match": {
+    "id": "m-demo-001",
+    "competition": "Harbor League (synthetic)",
+    "kickoff": "2026-10-17T15:00:00+03:00",
+    "venue": "Seaside Synthetic Arena",
+    "home": {
+      "code": "BH",
+      "name": "Blue Herons",
+      "players": [
+        {
+          "id": "BH-1",
+          "name": "Kofi Mensah",
+          "number": 1,
+          "position": "GK"
+        },
+        {
+          "id": "BH-2",
+          "name": "Sam Okello",
+          "number": 2,
+          "position": "DEF"
+        },
+        {
+          "id": "BH-4",
+          "name": "Imani Wekesa",
+          "number": 4,
+          "position": "DEF"
+        },
+        {
+          "id": "BH-5",
+          "name": "Noah Baraka",
+          "number": 5,
+          "position": "DEF"
+        },
+        {
+          "id": "BH-6",
+          "name": "Lila Njoroge",
+          "number": 6,
+          "position": "MID"
+        },
+        {
+          "id": "BH-8",
+          "name": "Ethan Otieno",
+          "number": 8,
+          "position": "MID"
+        },
+        {
+          "id": "BH-10",
+          "name": "Asha Kamau",
+          "number": 10,
+          "position": "MID"
+        },
+        {
+          "id": "BH-7",
+          "name": "Milo Cheruiyot",
+          "number": 7,
+          "position": "FWD"
+        },
+        {
+          "id": "BH-9",
+          "name": "Zuri Mwangi",
+          "number": 9,
+          "position": "FWD"
+        },
+        {
+          "id": "BH-11",
+          "name": "Tariq Hassan",
+          "number": 11,
+          "position": "FWD"
+        },
+        {
+          "id": "BH-3",
+          "name": "Pia Mutiso",
+          "number": 3,
+          "position": "DEF"
+        }
+      ]
+    },
+    "away": {
+      "code": "RK",
+      "name": "Red Kites",
+      "players": [
+        {
+          "id": "RK-1",
+          "name": "Juma Ochieng",
+          "number": 1,
+          "position": "GK"
+        },
+        {
+          "id": "RK-2",
+          "name": "Elena Kruk",
+          "number": 2,
+          "position": "DEF"
+        },
+        {
+          "id": "RK-3",
+          "name": "Diego Santos",
+          "number": 3,
+          "position": "DEF"
+        },
+        {
+          "id": "RK-4",
+          "name": "Makena Aoko",
+          "number": 4,
+          "position": "DEF"
+        },
+        {
+          "id": "RK-5",
+          "name": "Farid Yusuf",
+          "number": 5,
+          "position": "MID"
+        },
+        {
+          "id": "RK-6",
+          "name": "Sanaa Rehema",
+          "number": 6,
+          "position": "MID"
+        },
+        {
+          "id": "RK-8",
+          "name": "Leo Ndungu",
+          "number": 8,
+          "position": "MID"
+        },
+        {
+          "id": "RK-7",
+          "name": "Nina Wambui",
+          "number": 7,
+          "position": "FWD"
+        },
+        {
+          "id": "RK-9",
+          "name": "Omar Diallo",
+          "number": 9,
+          "position": "FWD"
+        },
+        {
+          "id": "RK-10",
+          "name": "Vera Kimani",
+          "number": 10,
+          "position": "FWD"
+        },
+        {
+          "id": "RK-11",
+          "name": "Chris Otieno",
+          "number": 11,
+          "position": "FWD"
+        }
+      ]
+    },
+    "score_ht": [
+      1,
+      0
+    ],
+    "score_ft": [
+      1,
+      1
+    ],
+    "seed": null,
+    "notes": "Hand-scripted demo match. BH 1-0 HT; RK press from 55'; equaliser 63'; RK-4 5th tackle won milestone 78'."
+  },
+  "events": [
+    {
+      "id": "e-0001",
+      "t": "0:00",
+      "period": 1,
+      "type": "kickoff",
+      "team": "BH",
+      "player": "BH-9",
+      "location": [
+        50.0,
+        50.0
+      ],
+      "outcome": "started",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0002",
+      "t": "2:10",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        25.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0003",
+      "t": "2:13",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        35.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0004",
+      "t": "2:16",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        48.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0005",
+      "t": "5:10",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        25.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0006",
+      "t": "5:13",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        35.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0007",
+      "t": "5:16",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        48.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0008",
+      "t": "8:10",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        25.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0009",
+      "t": "8:13",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        35.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0010",
+      "t": "8:16",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        48.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0011",
+      "t": "11:10",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        25.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0012",
+      "t": "11:13",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        35.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0013",
+      "t": "11:16",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        48.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0014",
+      "t": "14:10",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        25.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0015",
+      "t": "14:13",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        35.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0016",
+      "t": "14:16",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        48.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0017",
+      "t": "17:10",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        25.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0018",
+      "t": "17:13",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        35.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0019",
+      "t": "17:16",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        48.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0020",
+      "t": "3:20",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        55.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0021",
+      "t": "3:23",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        62.0,
+        45.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0022",
+      "t": "6:20",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        55.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0023",
+      "t": "6:23",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        62.0,
+        45.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0024",
+      "t": "9:20",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        55.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0025",
+      "t": "9:23",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        62.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0026",
+      "t": "12:20",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        55.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0027",
+      "t": "12:23",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        62.0,
+        45.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0028",
+      "t": "16:20",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        55.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0029",
+      "t": "16:23",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        62.0,
+        45.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0030",
+      "t": "18:20",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        55.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0031",
+      "t": "18:23",
+      "period": 1,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        62.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0032",
+      "t": "19:42",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-10",
+      "location": [
+        72.0,
+        48.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0033",
+      "t": "19:55",
+      "period": 1,
+      "type": "shot",
+      "team": "BH",
+      "player": "BH-9",
+      "location": [
+        88.0,
+        52.0
+      ],
+      "outcome": "goal",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0032"
+      ],
+      "attrs": {
+        "xg": 0.42,
+        "body_part": "right_foot"
+      }
+    },
+    {
+      "id": "e-0034",
+      "t": "19:56",
+      "period": 1,
+      "type": "save",
+      "team": "RK",
+      "player": "RK-1",
+      "location": [
+        99.0,
+        50.0
+      ],
+      "outcome": "conceded",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0033"
+      ]
+    },
+    {
+      "id": "e-0035",
+      "t": "22:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0036",
+      "t": "22:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0037",
+      "t": "22:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0038",
+      "t": "24:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0039",
+      "t": "24:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0040",
+      "t": "24:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0041",
+      "t": "26:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0042",
+      "t": "26:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0043",
+      "t": "26:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0044",
+      "t": "30:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0045",
+      "t": "30:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0046",
+      "t": "30:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0047",
+      "t": "32:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0048",
+      "t": "32:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0049",
+      "t": "32:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0050",
+      "t": "34:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0051",
+      "t": "34:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0052",
+      "t": "34:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0053",
+      "t": "38:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0054",
+      "t": "38:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0055",
+      "t": "38:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0056",
+      "t": "40:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0057",
+      "t": "40:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0058",
+      "t": "40:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0059",
+      "t": "42:05",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        30.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0060",
+      "t": "42:08",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0061",
+      "t": "42:11",
+      "period": 1,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        58.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0062",
+      "t": "28:12",
+      "period": 1,
+      "type": "shot",
+      "team": "BH",
+      "player": "BH-7",
+      "location": [
+        81.0,
+        40.0
+      ],
+      "outcome": "saved",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0063",
+      "t": "28:13",
+      "period": 1,
+      "type": "save",
+      "team": "RK",
+      "player": "RK-1",
+      "location": [
+        98.0,
+        44.0
+      ],
+      "outcome": "held",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0064",
+      "t": "36:40",
+      "period": 1,
+      "type": "shot",
+      "team": "RK",
+      "player": "RK-9",
+      "location": [
+        18.0,
+        55.0
+      ],
+      "outcome": "off_target",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0065",
+      "t": "45:00",
+      "period": 1,
+      "type": "period_end",
+      "team": "BH",
+      "player": null,
+      "location": null,
+      "outcome": "ended",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0066",
+      "t": "45:00",
+      "period": 2,
+      "type": "kickoff",
+      "team": "RK",
+      "player": "RK-9",
+      "location": [
+        50.0,
+        50.0
+      ],
+      "outcome": "started",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0067",
+      "t": "46:00",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        40.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0068",
+      "t": "46:03",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        48.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0069",
+      "t": "46:06",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        55.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0070",
+      "t": "47:00",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        40.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0071",
+      "t": "47:03",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        48.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0072",
+      "t": "47:06",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        55.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0073",
+      "t": "49:00",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        40.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0074",
+      "t": "49:03",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        48.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0075",
+      "t": "49:06",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        55.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0076",
+      "t": "50:00",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        40.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0077",
+      "t": "50:03",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-5",
+      "location": [
+        48.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0078",
+      "t": "50:06",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        55.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0079",
+      "t": "52:00",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        58.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0080",
+      "t": "52:03",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-6",
+      "location": [
+        50.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0081",
+      "t": "52:06",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        42.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0082",
+      "t": "53:00",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        58.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0083",
+      "t": "53:03",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-6",
+      "location": [
+        50.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0084",
+      "t": "53:06",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        42.0,
+        50.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0085",
+      "t": "55:05",
+      "period": 2,
+      "type": "pressure",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        42.0,
+        48.0
+      ],
+      "outcome": "applied",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0086",
+      "t": "55:18",
+      "period": 2,
+      "type": "tackle",
+      "team": "RK",
+      "player": "RK-4",
+      "location": [
+        38.0,
+        44.0
+      ],
+      "outcome": "won_possession",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0087",
+      "t": "56:02",
+      "period": 2,
+      "type": "pressure",
+      "team": "RK",
+      "player": "RK-6",
+      "location": [
+        35.0,
+        60.0
+      ],
+      "outcome": "applied",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0088",
+      "t": "56:10",
+      "period": 2,
+      "type": "interception",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        33.0,
+        55.0
+      ],
+      "outcome": "won_possession",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0089",
+      "t": "57:20",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-4",
+      "location": [
+        28.0,
+        40.0
+      ],
+      "outcome": "incomplete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0090",
+      "t": "57:22",
+      "period": 2,
+      "type": "tackle",
+      "team": "RK",
+      "player": "RK-4",
+      "location": [
+        30.0,
+        42.0
+      ],
+      "outcome": "won_possession",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0091",
+      "t": "57:40",
+      "period": 2,
+      "type": "pressure",
+      "team": "RK",
+      "player": "RK-10",
+      "location": [
+        40.0,
+        50.0
+      ],
+      "outcome": "applied",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0092",
+      "t": "58:55",
+      "period": 2,
+      "type": "tackle",
+      "team": "RK",
+      "player": "RK-4",
+      "location": [
+        36.0,
+        38.0
+      ],
+      "outcome": "won_possession",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0093",
+      "t": "59:10",
+      "period": 2,
+      "type": "pressure",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        44.0,
+        52.0
+      ],
+      "outcome": "applied",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0094",
+      "t": "60:05",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        55.0,
+        48.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0092"
+      ]
+    },
+    {
+      "id": "e-0095",
+      "t": "60:18",
+      "period": 2,
+      "type": "shot",
+      "team": "RK",
+      "player": "RK-9",
+      "location": [
+        78.0,
+        50.0
+      ],
+      "outcome": "saved",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0094",
+        "e-0088",
+        "e-0090",
+        "e-0092"
+      ],
+      "attrs": {
+        "xg": 0.21
+      }
+    },
+    {
+      "id": "e-0096",
+      "t": "60:19",
+      "period": 2,
+      "type": "save",
+      "team": "BH",
+      "player": "BH-1",
+      "location": [
+        2.0,
+        50.0
+      ],
+      "outcome": "parried",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0095"
+      ]
+    },
+    {
+      "id": "e-0097",
+      "t": "61:30",
+      "period": 2,
+      "type": "tackle",
+      "team": "RK",
+      "player": "RK-4",
+      "location": [
+        32.0,
+        47.0
+      ],
+      "outcome": "won_possession",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0098",
+      "t": "61:45",
+      "period": 2,
+      "type": "pressure",
+      "team": "RK",
+      "player": "RK-6",
+      "location": [
+        38.0,
+        45.0
+      ],
+      "outcome": "applied",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0099",
+      "t": "62:48",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-10",
+      "location": [
+        74.0,
+        58.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0100",
+      "t": "63:02",
+      "period": 2,
+      "type": "shot",
+      "team": "RK",
+      "player": "RK-9",
+      "location": [
+        86.0,
+        48.0
+      ],
+      "outcome": "goal",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0099",
+        "e-0097"
+      ],
+      "attrs": {
+        "xg": 0.38,
+        "body_part": "header"
+      }
+    },
+    {
+      "id": "e-0101",
+      "t": "63:03",
+      "period": 2,
+      "type": "save",
+      "team": "BH",
+      "player": "BH-1",
+      "location": [
+        1.0,
+        50.0
+      ],
+      "outcome": "conceded",
+      "match_id": "m-demo-001",
+      "related_event_ids": [
+        "e-0100"
+      ]
+    },
+    {
+      "id": "e-0102",
+      "t": "65:10",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        48.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0103",
+      "t": "65:13",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        58.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0104",
+      "t": "65:16",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-10",
+      "location": [
+        68.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0105",
+      "t": "68:10",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        48.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0106",
+      "t": "68:13",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        58.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0107",
+      "t": "68:16",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-10",
+      "location": [
+        68.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0108",
+      "t": "71:10",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        48.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0109",
+      "t": "71:13",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        58.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0110",
+      "t": "71:16",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-10",
+      "location": [
+        68.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0111",
+      "t": "70:22",
+      "period": 2,
+      "type": "shot",
+      "team": "BH",
+      "player": "BH-9",
+      "location": [
+        82.0,
+        44.0
+      ],
+      "outcome": "blocked",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0112",
+      "t": "74:01",
+      "period": 2,
+      "type": "shot",
+      "team": "RK",
+      "player": "RK-7",
+      "location": [
+        80.0,
+        36.0
+      ],
+      "outcome": "off_target",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0113",
+      "t": "78:14",
+      "period": 2,
+      "type": "tackle",
+      "team": "RK",
+      "player": "RK-4",
+      "location": [
+        41.0,
+        50.0
+      ],
+      "outcome": "won_possession",
+      "match_id": "m-demo-001",
+      "attrs": {
+        "milestone": "5th_tackle_won",
+        "career_note": "match_high"
+      }
+    },
+    {
+      "id": "e-0114",
+      "t": "80:15",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0115",
+      "t": "80:18",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        55.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0116",
+      "t": "80:21",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-10",
+      "location": [
+        65.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0117",
+      "t": "84:15",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-6",
+      "location": [
+        60.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0118",
+      "t": "84:18",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-8",
+      "location": [
+        50.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0119",
+      "t": "84:21",
+      "period": 2,
+      "type": "pass",
+      "team": "RK",
+      "player": "RK-5",
+      "location": [
+        40.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0120",
+      "t": "88:15",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-6",
+      "location": [
+        45.0,
+        40.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0121",
+      "t": "88:18",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-8",
+      "location": [
+        55.0,
+        45.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0122",
+      "t": "88:21",
+      "period": 2,
+      "type": "pass",
+      "team": "BH",
+      "player": "BH-10",
+      "location": [
+        65.0,
+        50.0
+      ],
+      "outcome": "complete",
+      "match_id": "m-demo-001"
+    },
+    {
+      "id": "e-0123",
+      "t": "90:00",
+      "period": 2,
+      "type": "period_end",
+      "team": "RK",
+      "player": null,
+      "location": null,
+      "outcome": "ended",
+      "match_id": "m-demo-001"
+    }
+  ]
+}
