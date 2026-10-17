@@ -60,7 +60,7 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 - [ ] Agree web slice claims for the week with Posh
 
 ### Mon Oct 19 → Tue Oct 20
-- [ ] Replay engine (local queue interface) in `pipeline/`
+- [x] Replay engine (local queue interface) in `pipeline/`
 - [ ] Match-state aggregator
 - [ ] Moment detector (5 types)
 - [ ] Hand off callable library / module contracts so Posh can expose them via API
