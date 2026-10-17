@@ -11,6 +11,61 @@ Built for the Microsoft Premier League Hackathon ("Inside the Game"). All data i
 
 ---
 
+## Current progress (handoff for Eric / Posh)
+
+Branch: **`feature/daniel-data-foundation`** (merge when ready).  
+Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).
+
+### What Daniel shipped (Oct 17) — ready for you to build against
+
+| Piece | Where | Notes |
+|---|---|---|
+| Event schema v1 | [`docs/event-schema.md`](docs/event-schema.md) | Freeze target Sun Oct 18 EOD |
+| Demo match | [`data/matches/m-demo-001.json`](data/matches/m-demo-001.json) | Blue Herons vs Red Kites, 90′, 123 events, 1–1 FT |
+| Fact-layer fixtures | [`data/fixtures/m-demo-001.moments.json`](data/fixtures/m-demo-001.moments.json) | **5 moments** with `event_ids` + `stats` — use this to stub API/UI |
+| Scripted builder + realism | [`generator/`](generator/) | `python -m generator.build_demo_data` |
+| Replay engine | [`pipeline/replay.py`](pipeline/replay.py) | Timed / instant stream + in-process queue |
+| Match-state aggregator | [`pipeline/state.py`](pipeline/state.py) | Score, possession, shots, turnovers |
+| Moment detector | [`pipeline/moments.py`](pipeline/moments.py) | All five moment types (deterministic) |
+
+**Not done yet (no Azure/Foundry required for your stubs):** HTTP `api/`, personas, Kiswahili lexicon, `web/`, explainer/verifier agents.
+
+### Storyline locked in the demo match
+
+1. Blue Herons lead **1–0** at half time (~20′ goal).  
+2. Red Kites **press** from ~**55′** and force turnovers in the Blue Herons half.  
+3. Red Kites **equalise** ~**63′**.  
+4. **RK-4** hits a **5th tackle won** milestone ~**78′**.
+
+### Commands you can run today
+
+```bash
+git checkout feature/daniel-data-foundation
+
+# Regenerate match + fixtures + realism report
+python -m generator.build_demo_data
+
+# Replay (instant smoke)
+python -m pipeline.replay --instant
+
+# Replay the key window at 30× speed
+python -m pipeline.replay --start 55:00 --end 65:00 --speed 30
+
+# Aggregate state + detect moments
+python -m pipeline.detect
+```
+
+### Suggested next steps for Eric
+
+1. Scaffold **`api/`** (FastAPI) that serves `data/fixtures/m-demo-001.moments.json` and/or calls `MomentDetector.detect_all`.  
+2. Scaffold **`web/`** against those fixtures (persona/language switches can be UI-only at first).  
+3. Start **`lexicon/sw.yaml`** with demo-match terms only (~40–60).  
+4. Backend tests under `tests/` are yours per the task split.
+
+Daniel’s next slice (later): claim schema + explainer + verifier (agentic / Foundry — mid-week).
+
+---
+
 ## The problem
 
 1. **Broadcasts show what happened, not why it mattered.** A viewer sees a turnover and a shot. They don't see that it was the third time in five minutes the defence had been caught high.
@@ -139,53 +194,63 @@ AI commentary is only useful on screen if it is right. Mechi Yako uses a **claim
 | State and audit log | Azure Cosmos DB |
 | Speech (optional) | Azure AI Speech |
 | Observability | Application Insights, Foundry tracing |
-| Front end | `TODO: framework` |
+| Front end | React + TypeScript (Vite) — planned |
+| Local stream | In-process queue (`pipeline/queue.py`); Service Bus optional later |
 | Dev tooling | GitHub Copilot Agent Mode |
 
 ---
 
 ## Getting started
 
-> `TODO`: fill in once the first build runs end to end.
+Python 3.9+ is enough for the current libraries (no third-party deps required yet).
 
 ```bash
 # 1. Clone
 git clone https://github.com/posh9376/mechi-yako.git
 cd mechi-yako
+git checkout feature/daniel-data-foundation   # until merged to main
 
-# 2. Configure environment
-cp .env.example .env   # add your Azure and Foundry settings
+# 2. (Later) Azure / Foundry — not needed for fixtures, replay, or detect
+# cp .env.example .env
 
-# 3. Generate a synthetic match
-# TODO: command
+# 3. Demo data + realism
+python -m generator.build_demo_data
 
-# 4. Run the pipeline and open the UI
-# TODO: command
+# 4. Pipeline smoke
+python -m pipeline.replay --instant
+python -m pipeline.detect
+
+# 5. API + UI — TODO (Eric)
 ```
 
 ### Project structure
 
 ```
 mechi-yako/
-├── generator/      # Synthetic Match Factory and realism report
-├── pipeline/       # Ingest, interpret, explain, render
-├── agents/         # Moment detector, explainer, verifier, persona, narrator, QA
-├── lexicon/        # Kiswahili football lexicon and register guides
-├── web/            # Front end
-├── docs/           # Event schema, architecture notes
-├── infra/          # Azure deployment
-└── tests/
+├── data/           # Demo match JSON + fact-layer fixtures (Posh: consume these)
+├── docs/           # Event schema v1
+├── generator/      # Scripted demo match builder + realism report
+├── pipeline/       # Replay, state aggregator, moment detector (Daniel libs)
+├── TEAM_TASKS.md   # Daniel vs Posh ownership
+├── agents/         # (soon) explainer, verifier, persona, narrator, QA
+├── lexicon/        # (soon) Kiswahili lexicon — Eric
+├── api/            # (soon) FastAPI — Eric
+├── web/            # (soon) React UI — shared / alternate
+├── infra/          # (later) Azure deploy — Daniel
+└── tests/          # (soon) backend tests — Eric
 ```
 
 ---
 
 ## Status
 
-- [ ] Event schema defined
-- [ ] Synthetic match generator and realism report
-- [ ] Event streaming pipeline
-- [ ] Moment detection and explanation
-- [ ] Verifier
+- [x] Event schema defined (`docs/event-schema.md`)
+- [x] Scripted demo match + realism report (`generator/`, `data/matches/`)
+- [x] Fact-layer fixtures for API/UI stubs (`data/fixtures/`)
+- [x] Replay / event stream library (`pipeline/replay.py`)
+- [x] Match-state aggregator (`pipeline/state.py`)
+- [x] Moment detection — deterministic (`pipeline/moments.py`)
+- [ ] Moment **explanation** (explainer agent) + verifier
 - [ ] Persona engine (three personas)
 - [ ] Kiswahili narration and lexicon
 - [ ] Front end with persona and language switcher
@@ -233,5 +298,5 @@ mechi-yako/
 
 ## Team
 
-- **Daniel Githumbi**. `TODO`: add role and links.
-- **Eric "Posh" Amenya**, Nairobi, Kenya. `TODO`: add role and links.
+- **Daniel Githumbi** — data, pipeline libraries, infra/deploy; web slices (Why? panel / lower third).
+- **Eric "Posh" Amenya**, Nairobi, Kenya — API, backend tests, personas, Kiswahili, demo video; web slices (match view / switches). Representative / submitter (default).
