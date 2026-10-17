@@ -52,10 +52,10 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 ## Daniel — data, pipeline, infra, deploy (+ web slices)
 
 ### Now → Sun Oct 18
-- [ ] Event schema v1 → `docs/event-schema.md`
-- [ ] Hand-scripted demo match → `data/matches/` (Blue Herons / Red Kites storyline)
-- [ ] Fact-layer fixtures for ≥3 moments → `data/fixtures/` (unblocks Posh API + UI)
-- [ ] Basic realism pass/fail on the demo match
+- [x] Event schema v1 → `docs/event-schema.md`
+- [x] Hand-scripted demo match → `data/matches/` (Blue Herons / Red Kites storyline)
+- [x] Fact-layer fixtures for ≥3 moments → `data/fixtures/` (unblocks Posh API + UI)
+- [x] Basic realism pass/fail on the demo match
 - [ ] Thin generator later if time (do not block fixtures)
 - [ ] Agree web slice claims for the week with Posh
 
