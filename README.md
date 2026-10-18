@@ -13,22 +13,22 @@ Built for the Microsoft Premier League Hackathon ("Inside the Game"). All data i
 
 ## Current progress (handoff for Eric / Posh)
 
-Branch: **`feature/daniel-data-foundation`** (merge when ready).  
-Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).
+Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).  
+Working branch for combined API + verifier: **`feature/posh-api-foundation`** (includes Daniel explain/verify from `main`).
 
-### What Daniel shipped (Oct 17) — ready for you to build against
+### What Daniel shipped
 
-| Piece | Where | Notes |
+| When | Piece | Where |
 |---|---|---|
-| Event schema v1 | [`docs/event-schema.md`](docs/event-schema.md) | Freeze target Sun Oct 18 EOD |
-| Demo match | [`data/matches/m-demo-001.json`](data/matches/m-demo-001.json) | Blue Herons vs Red Kites, 90′, 123 events, 1–1 FT |
-| Fact-layer fixtures | [`data/fixtures/m-demo-001.moments.json`](data/fixtures/m-demo-001.moments.json) | **5 moments** with `event_ids` + `stats` — use this to stub API/UI |
-| Scripted builder + realism | [`generator/`](generator/) | `python -m generator.build_demo_data` |
-| Replay engine | [`pipeline/replay.py`](pipeline/replay.py) | Timed / instant stream + in-process queue |
-| Match-state aggregator | [`pipeline/state.py`](pipeline/state.py) | Score, possession, shots, turnovers |
-| Moment detector | [`pipeline/moments.py`](pipeline/moments.py) | All five moment types (deterministic) |
+| Oct 17 | Event schema, demo match, fixtures, realism | `docs/`, `data/`, `generator/` |
+| Oct 17 | Replay, state aggregator, moment detector | `pipeline/` |
+| Oct 18 | **Claim schema** | [`docs/claim-schema.md`](docs/claim-schema.md) |
+| Oct 18 | **Template explainer** (no Foundry yet) | [`agents/explainer.py`](agents/explainer.py) |
+| Oct 18 | **Deterministic verifier** + audit log | [`agents/verifier.py`](agents/verifier.py) |
+| Oct 18 | Explain→verify CLI + **injected wrong-stat** demo | `python -m agents.run_explain_verify` |
 
-**Not done yet (no Azure/Foundry required for your stubs):** HTTP `api/`, personas, Kiswahili lexicon, `web/`, explainer/verifier agents.
+**Posh has shipped** API, web, lexicon, personas, narrator, QA, tests.  
+**Still for Daniel:** Why? panel / lower third, infra deploy, optional Foundry explainer.
 
 ### Storyline locked in the demo match
 
@@ -40,22 +40,19 @@ Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).
 ### Commands you can run today
 
 ```bash
-git checkout feature/daniel-data-foundation
+git checkout feature/posh-api-foundation
 
-# Regenerate match + fixtures + realism report
 python -m generator.build_demo_data
-
-# Replay (instant smoke)
 python -m pipeline.replay --instant
-
-# Replay the key window at 30× speed
-python -m pipeline.replay --start 55:00 --end 65:00 --speed 30
-
-# Aggregate state + detect moments
 python -m pipeline.detect
+python -m agents.run_explain_verify
+
+# API + UI
+python -m uvicorn api.main:app --reload --port 8000
+cd web && npm install && npm run dev
 ```
 
-### What Posh shipped (Oct 17), branch `feature/posh-api-foundation`
+### What Posh shipped (Oct 17–18), branch `feature/posh-api-foundation`
 
 | Piece | Where | Notes |
 |---|---|---|
@@ -64,18 +61,19 @@ python -m pipeline.detect
 | Kiswahili narrator | [`agents/narrator/sw.py`](agents/narrator/sw.py) | Native templates in formal, casual and simple registers |
 | Language QA | [`agents/language_qa/`](agents/language_qa/) | Pass/flag badge source |
 | Kiswahili lexicon | [`lexicon/sw.yaml`](lexicon/sw.yaml) | ~50 demo terms, register guides, review **pending** |
-| Claims seam | [`api/claims.py`](api/claims.py) | Deterministic checker and audit log, ready to swap for Daniel's verifier |
+| Claims seam | [`api/claims.py`](api/claims.py) | `AgentsClaimChecker` wraps Daniel's verifier; falls back for extra metrics |
 | Web app | [`web/`](web/) | Vite + React + TS match view, persona/language/register switches, QA badge |
 | Cached demo | [`web/public/demo-bundle.json`](web/public/demo-bundle.json) | Shape in [`docs/cache-bundle.md`](docs/cache-bundle.md) |
 | Backend tests | [`tests/`](tests/) | pipeline, generator, API, agents, wrong-stat |
 | Storyboard | [`docs/demo-storyboard.md`](docs/demo-storyboard.md) | Shot list, pitch and submission checklists |
 
-**For Daniel:**
-- **Fixture data note.** `mom-pressure-01` in the fixture has `window_minutes: 7`, while its cited events span 6.7 minutes. The verifier marks it `corrected`, and the UI and narrations show 6.7. Details are in [`docs/cache-bundle.md`](docs/cache-bundle.md#known-data-note-for-daniel).
-- **Verifier swap.** Your verifier can replace `DeterministicClaimChecker` behind the `ClaimChecker` protocol in `api/claims.py`. The HTTP shape stays the same.
-- **Deploy smoke.** `GET /health` returns the loaded match ID and the moment counts.
+**Merged:** Daniel's claim schema + `agents/verifier` + template explainer are on this branch (from `main`).
 
-Daniel’s next slice (later): claim schema + explainer + verifier (agentic / Foundry — mid-week).
+**Still for Daniel:**
+- Why? panel / lower third in `web/`
+- Azure Container Apps deploy
+- Optional Foundry-backed explainer
+- Fixture note: `mom-pressure-01` `window_minutes: 7` corrects to **6.7** — see [`docs/cache-bundle.md`](docs/cache-bundle.md#known-data-note-for-daniel)
 
 ---
 
@@ -250,17 +248,18 @@ The pipeline and generator use the standard library only and run on Python 3.9+.
 # 1. Clone
 git clone https://github.com/posh9376/mechi-yako.git
 cd mechi-yako
-git checkout feature/daniel-data-foundation   # until merged to main
+git checkout feature/daniel-explain-verify   # until merged to main
 
-# 2. (Later) Azure / Foundry — not needed for fixtures, replay, or detect
+# 2. (Later) Azure / Foundry — not needed for template explainer or verifier
 # cp .env.example .env
 
 # 3. Demo data + realism
 python -m generator.build_demo_data
 
-# 4. Pipeline smoke
+# 4. Pipeline + explain/verify smoke
 python -m pipeline.replay --instant
 python -m pipeline.detect
+python -m agents.run_explain_verify
 
 # 5. API (http://127.0.0.1:8000, interactive docs at /docs)
 pip install -r requirements-dev.txt
@@ -321,18 +320,18 @@ curl -s -X POST http://127.0.0.1:8000/matches/m-demo-001/narrate \
 ```
 mechi-yako/
 ├── data/           # Demo match JSON + fact-layer fixtures (Posh: consume these)
-├── docs/           # Event schema v1, cache bundle shape, demo storyboard
+├── docs/           # Event schema, claim schema, cache bundle, storyboard
 ├── generator/      # Scripted demo match builder + realism report
-├── pipeline/       # Replay, state aggregator, moment detector (Daniel libs)
+├── pipeline/       # Replay, state aggregator, moment detector (Daniel)
 ├── TEAM_TASKS.md   # Daniel vs Posh ownership
 ├── agents/
-│   ├── persona/      # Persona definitions, shared fact layer, English writer — Eric
-│   ├── narrator/     # Kiswahili narrator — Eric
-│   ├── language_qa/  # Pass/flag QA against the fact layer — Eric
-│   └── (soon)        # explainer, verifier — Daniel
-├── lexicon/        # Kiswahili lexicon (sw.yaml) + loader — Eric
-├── api/            # FastAPI app, claims/audit seam, cache bundle builder — Eric
-├── web/            # Vite + React + TS match view — Eric (Why? panel / lower third: Daniel)
+│   ├── explainer.py / verifier.py   # Daniel
+│   ├── persona/                     # Eric
+│   ├── narrator/                    # Eric
+│   └── language_qa/                 # Eric
+├── lexicon/        # Kiswahili lexicon (sw.yaml) — Eric
+├── api/            # FastAPI + AgentsClaimChecker — Eric (verifier wired by Daniel)
+├── web/            # Vite + React match view — Eric (Why? panel / lower third: Daniel)
 ├── infra/          # (later) Azure deploy — Daniel
 └── tests/          # Backend tests: api, agents, pipeline, generator — Eric
 ```
@@ -347,17 +346,18 @@ mechi-yako/
 - [x] Replay / event stream library (`pipeline/replay.py`)
 - [x] Match-state aggregator (`pipeline/state.py`)
 - [x] Moment detection — deterministic (`pipeline/moments.py`)
+- [x] Claim schema + template explainer + verifier (`agents/`, `docs/claim-schema.md`)
 - [x] Fact-layer HTTP API with SSE live feed (`api/`)
 - [x] Persona engine, three personas (deterministic writer; `agents/persona/`)
 - [x] Kiswahili narration and lexicon (`agents/narrator/`, `lexicon/sw.yaml`)
 - [x] Language QA badge (`agents/language_qa/`)
-- [x] Claims check and audit log with a deterministic checker (`api/claims.py`)
+- [x] Claims check and audit log (`AgentsClaimChecker` → `agents.verifier`)
 - [x] Front end with persona, language and register switches (`web/`)
 - [x] Cached demo bundle for API-down runs (`web/public/demo-bundle.json`)
 - [x] Backend tests (`tests/`)
-- [ ] Moment **explanation** (explainer agent) + verifier
+- [ ] Why? panel / lower third (Daniel web slices)
 - [ ] Native-speaker review of the Kiswahili lexicon and demo lines
-- [ ] Foundry-backed writer and QA adapters
+- [ ] Foundry-backed explainer / writer adapters
 - [ ] Deployed demo link
 - [ ] Demo video ([storyboard](docs/demo-storyboard.md))
 

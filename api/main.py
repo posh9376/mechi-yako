@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
 from api import data
-from api.claims import AuditLog, Claim, DeterministicClaimChecker, claims_for_moment, verify_moment
+from api.claims import AgentsClaimChecker, AuditLog, Claim, claims_for_moment, verify_moment
 from api.feed import stream_match
 from api.narration import NarrationError, narrate, options
 from pipeline.clock import parse_clock
@@ -48,7 +48,7 @@ def create_app() -> FastAPI:
         version="0.1.0",
         description="Fact-layer API over the synthetic match pipeline.",
     )
-    app.state.checker = DeterministicClaimChecker()
+    app.state.checker = AgentsClaimChecker()
     app.state.audit = AuditLog()
 
     origins = [

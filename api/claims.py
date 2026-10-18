@@ -1,8 +1,8 @@
 """Claims seam: recompute fact-layer stats from raw events and keep an audit log.
 
-This is a local deterministic checker so the API and UI can ship before the verifier agent
-(``agents/verifier``, Daniel) exists. Swap ``DeterministicClaimChecker`` for that library
-behind the same ``check`` signature.
+Default checker is ``AgentsClaimChecker``, which wraps Daniel's ``agents.verifier.ClaimVerifier``
+and falls back to ``DeterministicClaimChecker`` for API metrics the library does not cover yet
+(e.g. ``window_minutes``, ``scorer``).
 """
 
 from __future__ import annotations
@@ -12,7 +12,25 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Callable, Protocol
 
+from agents.verifier import ClaimVerifier
 from pipeline.clock import parse_clock
+
+# Metrics handled by agents.verifier.ClaimVerifier
+# Metrics verified by agents.verifier against cited event_ids.
+# ``tackles_won`` stays on the deterministic checker: milestone claims use a
+# match-scoped tally through t_peak, not only the cited event list.
+_AGENTS_METRICS = frozenset(
+    {
+        "event_count",
+        "high_turnovers",
+        "pressure_events",
+        "turnovers_before_shot",
+        "shot_outcome",
+        "goals",
+        "score_after",
+        "literal",
+    }
+)
 
 # Descriptive stat keys that are labels, not claims.
 CONTEXT_KEYS = frozenset({"zone", "player", "metric", "milestone"})
@@ -169,6 +187,87 @@ def stat_key_for(metric: str, moment: dict[str, Any]) -> str:
     if moment["stats"].get("metric") == metric and "value" in moment["stats"]:
         return "value"
     return metric
+
+
+class AgentsClaimChecker:
+    """Prefer ``agents.verifier``; fall back for extra fact-layer metrics."""
+
+    name = "agents-verifier-v1"
+
+    def __init__(self) -> None:
+        self._fallback = DeterministicClaimChecker()
+
+    def check(self, claim: Claim, moment: dict[str, Any], doc: dict[str, Any]) -> dict[str, Any]:
+        if claim.metric not in _AGENTS_METRICS:
+            decision = self._fallback.check(claim, moment, doc)
+            decision["checker"] = self.name
+            decision["via"] = self._fallback.name
+            return decision
+
+        index = {e["id"]: e for e in doc["events"]}
+        missing = [eid for eid in claim.event_ids if eid not in index]
+        base: dict[str, Any] = {
+            "moment_id": claim.moment_id,
+            "metric": claim.metric,
+            "claimed": claim.value,
+            "event_ids": list(claim.event_ids),
+            "recomputed": None,
+            "status": "blocked",
+            "reason": "",
+            "checker": self.name,
+            "via": "agents.verifier",
+        }
+        if missing:
+            base["reason"] = f"cited events do not exist: {missing}"
+            return base
+
+        entities = dict(moment.get("entities") or {})
+        stats = moment.get("stats") or {}
+        if stats.get("shot_event_id"):
+            entities.setdefault("shot_event_id", stats["shot_event_id"])
+        if stats.get("player") or entities.get("player"):
+            entities.setdefault("player", stats.get("player") or entities.get("player"))
+
+        claim_dict = {
+            "id": f"{claim.moment_id}:{claim.metric}",
+            "match_id": doc["match"]["id"],
+            "moment_id": claim.moment_id,
+            "metric": claim.metric,
+            "value": claim.value,
+            "entities": entities,
+            "event_ids": list(claim.event_ids),
+            "sentence": f"{claim.metric}={claim.value!r}",
+        }
+        result = ClaimVerifier(doc).verify(claim_dict)
+        base["recomputed"] = result.expected_value
+        base["reason"] = result.reason
+        base["event_ids_resolved"] = result.event_ids_resolved
+        base["event_ids_missing"] = result.event_ids_missing
+
+        if result.decision == "approved":
+            base["status"] = "approved"
+            base["reason"] = "matches raw events"
+        elif result.decision == "corrected":
+            # HTTP / UI contract: integer mismatches are blocked; float drift is corrected.
+            expected = result.expected_value
+            claimed = claim.value
+            if (
+                isinstance(expected, float)
+                and isinstance(claimed, (int, float))
+                and not isinstance(claimed, bool)
+                and abs(float(expected) - float(claimed)) <= FLOAT_TOLERANCE
+            ):
+                base["status"] = "corrected"
+                base["corrected_value"] = expected
+                base["reason"] = f"rounding: raw events give {expected}"
+            else:
+                base["status"] = "blocked"
+                base["reason"] = f"raw events give {expected!r}"
+        else:
+            base["status"] = "blocked"
+            if result.event_ids_missing:
+                base["reason"] = f"cited events do not exist: {result.event_ids_missing}"
+        return base
 
 
 class DeterministicClaimChecker:

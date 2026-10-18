@@ -67,9 +67,10 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 - [ ] Start claimed web slice (e.g. Why? panel shell against fixtures)
 
 ### Wed Oct 21 → Thu Oct 22
-- [ ] Claim schema + explainer agent
-- [ ] Verifier (approve / correct / block + audit log) as library
+- [x] Claim schema + template explainer (Foundry swap later) — started early Oct 18
+- [x] Verifier (approve / correct / block + audit log) as library
 - [ ] Coordinate with Posh so injected wrong-stat test lives under his `tests/`
+- [ ] Foundry-backed explainer (optional upgrade)
 - [ ] Continue web slice (Why? panel / lower third) once API shapes exist
 
 ### Fri Oct 23 → Sun Oct 25

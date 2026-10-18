@@ -16,7 +16,7 @@ from typing import Any
 
 from agents.persona.definitions import LANGUAGES, PERSONAS, REGISTERS
 from api import data
-from api.claims import DeterministicClaimChecker, verify_moment
+from api.claims import AgentsClaimChecker, verify_moment
 from api.narration import narrate
 from lexicon import load_lexicon
 from pipeline.state import MatchStateAggregator
@@ -28,7 +28,7 @@ DEFAULT_OUT = data.ROOT / "web" / "public" / "demo-bundle.json"
 def build_bundle(match_id: str = "m-demo-001", source: data.MomentSource = "fixture") -> dict[str, Any]:
     doc = data.get_match_doc(match_id)
     moments = data.get_moments(match_id, source)
-    checker = DeterministicClaimChecker()
+    checker = AgentsClaimChecker()
 
     agg = MatchStateAggregator(doc["match"])
     agg.ingest_all(doc["events"])
