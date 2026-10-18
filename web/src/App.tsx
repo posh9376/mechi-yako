@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FULL_TIME_S, parseClock, scoreAt } from "./clock";
+import { LowerThird } from "./components/LowerThird";
 import { MomentDetail, type NarrationState } from "./components/MomentDetail";
 import { MomentList } from "./components/MomentList";
 import { ReplayControls } from "./components/ReplayControls";
 import { ScoreBar } from "./components/ScoreBar";
 import { Switches } from "./components/Switches";
+import { WhyPanel } from "./components/WhyPanel";
 import type { DataSource, Language, MatchData, PersonaId, Register } from "./types";
 
 type LoadState =
@@ -191,6 +193,15 @@ export function App({ source, onUseCached }: Props) {
           onRetry={() => setNarrationNonce((n) => n + 1)}
         />
       </div>
+      <WhyPanel moment={selected} events={events} narration={narration} />
+      <LowerThird
+        match={match}
+        score={score}
+        clockS={clockS}
+        moment={selected}
+        language={language}
+        narration={narration}
+      />
       <footer className="app__footer">
         Synthetic data · fictional clubs and players · Kiswahili lines pending native-speaker review
       </footer>

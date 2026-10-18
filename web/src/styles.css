@@ -393,11 +393,247 @@ select {
   color: var(--muted);
   font-size: 0.8rem;
   text-align: center;
+  margin-bottom: 72px;
+}
+
+/* --- Why? panel (Daniel) --- */
+
+.why {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.why--empty {
+  min-height: 100px;
+}
+
+.why__header {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.why__title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.why__lede {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.why__summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.why__grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: 16px;
+}
+
+.why__section {
+  margin: 0 0 8px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+}
+
+.why__claims,
+.why__events {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.why__claim,
+.why__event {
+  display: grid;
+  gap: 6px 10px;
+  align-items: baseline;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--panel-2);
+  font-size: 0.88rem;
+}
+
+.why__claim {
+  grid-template-columns: auto 1fr auto;
+}
+
+.why__claim-detail {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.why__claim-metric {
+  font-weight: 600;
+}
+
+.why__claim-value {
+  font-variant-numeric: tabular-nums;
+  color: var(--accent);
+}
+
+.why__event {
+  grid-template-columns: auto 52px 1fr auto;
+}
+
+.why__eid {
+  font-size: 0.75rem;
+  color: var(--home);
+}
+
+.why__etime {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
+.v-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+
+.v-badge--approved {
+  background: color-mix(in srgb, var(--accent) 22%, transparent);
+  color: var(--accent);
+}
+
+.v-badge--corrected {
+  background: color-mix(in srgb, var(--warn) 22%, transparent);
+  color: var(--warn);
+}
+
+.v-badge--blocked {
+  background: color-mix(in srgb, var(--danger) 22%, transparent);
+  color: var(--danger);
+}
+
+.v-badge--pending {
+  background: color-mix(in srgb, var(--muted) 22%, transparent);
+  color: var(--muted);
+}
+
+/* --- Lower third (Daniel) --- */
+
+.lower-third {
+  position: sticky;
+  bottom: 12px;
+  z-index: 20;
+  pointer-events: none;
+}
+
+.lower-third__bar {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, #0a1628 0%, #132238 55%, #1a2f4a 100%);
+  border: 1px solid #2a4a6e;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+}
+
+.lower-third__score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.lower-third__club--home {
+  color: var(--home);
+}
+
+.lower-third__club--away {
+  color: var(--away);
+}
+
+.lower-third__nums {
+  font-size: 1.15rem;
+}
+
+.lower-third__clock {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  font-size: 0.85rem;
+}
+
+.lower-third__copy {
+  min-width: 0;
+}
+
+.lower-third__eyebrow {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ec5ff;
+  margin-bottom: 2px;
+}
+
+.lower-third__text {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lower-third__cite {
+  font-size: 0.72rem;
+  color: var(--muted);
+  white-space: nowrap;
 }
 
 @media (max-width: 760px) {
   .app__columns {
     grid-template-columns: 1fr;
+  }
+
+  .why__grid {
+    grid-template-columns: 1fr;
+  }
+
+  .why__event {
+    grid-template-columns: auto 1fr;
+  }
+
+  .why__etime {
+    justify-self: end;
+  }
+
+  .lower-third__bar {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .lower-third__text {
+    white-space: normal;
   }
 
   .scorebar {

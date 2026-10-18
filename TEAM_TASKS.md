@@ -71,7 +71,7 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 - [x] Verifier (approve / correct / block + audit log) as library
 - [ ] Coordinate with Posh so injected wrong-stat test lives under his `tests/`
 - [ ] Foundry-backed explainer (optional upgrade)
-- [ ] Continue web slice (Why? panel / lower third) once API shapes exist
+- [x] Continue web slice (Why? panel / lower third) — `feature/daniel-web-why-overlay`
 
 ### Fri Oct 23 → Sun Oct 25
 - [ ] **Deploy** API + web to Azure Container Apps

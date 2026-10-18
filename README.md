@@ -355,7 +355,7 @@ mechi-yako/
 - [x] Front end with persona, language and register switches (`web/`)
 - [x] Cached demo bundle for API-down runs (`web/public/demo-bundle.json`)
 - [x] Backend tests (`tests/`)
-- [ ] Why? panel / lower third (Daniel web slices)
+- [x] Why? panel / lower third (Daniel; branch `feature/daniel-web-why-overlay`)
 - [ ] Native-speaker review of the Kiswahili lexicon and demo lines
 - [ ] Foundry-backed explainer / writer adapters
 - [ ] Deployed demo link
