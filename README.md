@@ -13,22 +13,22 @@ Built for the Microsoft Premier League Hackathon ("Inside the Game"). All data i
 
 ## Current progress (handoff for Eric / Posh)
 
-Branch: **`feature/daniel-data-foundation`** (merge when ready).  
-Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).
+Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).  
+**`main`** has the Oct 17 data/pipeline work. Latest explain/verify work is on **`feature/daniel-explain-verify`** (merge when ready).
 
-### What Daniel shipped (Oct 17) — ready for you to build against
+### What Daniel shipped
 
-| Piece | Where | Notes |
+| When | Piece | Where |
 |---|---|---|
-| Event schema v1 | [`docs/event-schema.md`](docs/event-schema.md) | Freeze target Sun Oct 18 EOD |
-| Demo match | [`data/matches/m-demo-001.json`](data/matches/m-demo-001.json) | Blue Herons vs Red Kites, 90′, 123 events, 1–1 FT |
-| Fact-layer fixtures | [`data/fixtures/m-demo-001.moments.json`](data/fixtures/m-demo-001.moments.json) | **5 moments** with `event_ids` + `stats` — use this to stub API/UI |
-| Scripted builder + realism | [`generator/`](generator/) | `python -m generator.build_demo_data` |
-| Replay engine | [`pipeline/replay.py`](pipeline/replay.py) | Timed / instant stream + in-process queue |
-| Match-state aggregator | [`pipeline/state.py`](pipeline/state.py) | Score, possession, shots, turnovers |
-| Moment detector | [`pipeline/moments.py`](pipeline/moments.py) | All five moment types (deterministic) |
+| Oct 17 | Event schema, demo match, fixtures, realism | `docs/`, `data/`, `generator/` |
+| Oct 17 | Replay, state aggregator, moment detector | `pipeline/` |
+| Oct 18 | **Claim schema** | [`docs/claim-schema.md`](docs/claim-schema.md) |
+| Oct 18 | **Template explainer** (no Foundry yet) | [`agents/explainer.py`](agents/explainer.py) |
+| Oct 18 | **Deterministic verifier** + audit log | [`agents/verifier.py`](agents/verifier.py) |
+| Oct 18 | Explain→verify CLI + **injected wrong-stat** demo | `python -m agents.run_explain_verify` |
 
-**Not done yet (no Azure/Foundry required for your stubs):** HTTP `api/`, personas, Kiswahili lexicon, `web/`, explainer/verifier agents.
+**Still for Eric:** `api/`, `web/`, `lexicon/`, personas, backend `tests/`.  
+**Still for Daniel later:** Foundry-backed explainer, infra deploy, Why? panel / lower third.
 
 ### Storyline locked in the demo match
 
@@ -40,29 +40,22 @@ Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).
 ### Commands you can run today
 
 ```bash
-git checkout feature/daniel-data-foundation
+git checkout feature/daniel-explain-verify   # or main after merge
 
-# Regenerate match + fixtures + realism report
 python -m generator.build_demo_data
-
-# Replay (instant smoke)
 python -m pipeline.replay --instant
-
-# Replay the key window at 30× speed
-python -m pipeline.replay --start 55:00 --end 65:00 --speed 30
-
-# Aggregate state + detect moments
 python -m pipeline.detect
+
+# New: claims from fixtures → verify; wrong stat gets corrected/blocked
+python -m agents.run_explain_verify
 ```
 
 ### Suggested next steps for Eric
 
-1. Scaffold **`api/`** (FastAPI) that serves `data/fixtures/m-demo-001.moments.json` and/or calls `MomentDetector.detect_all`.  
-2. Scaffold **`web/`** against those fixtures (persona/language switches can be UI-only at first).  
-3. Start **`lexicon/sw.yaml`** with demo-match terms only (~40–60).  
-4. Backend tests under `tests/` are yours per the task split.
-
-Daniel’s next slice (later): claim schema + explainer + verifier (agentic / Foundry — mid-week).
+1. Scaffold **`api/`** serving fixtures **and** (when merged) verified claims / audit log.  
+2. Scaffold **`web/`** — moments feed + Why? panel hooks for verifier badges.  
+3. Start **`lexicon/sw.yaml`** (demo-match terms).  
+4. Only show **approved** (or auto-corrected) claims to personas / UI.
 
 ---
 
@@ -208,17 +201,18 @@ Python 3.9+ is enough for the current libraries (no third-party deps required ye
 # 1. Clone
 git clone https://github.com/posh9376/mechi-yako.git
 cd mechi-yako
-git checkout feature/daniel-data-foundation   # until merged to main
+git checkout feature/daniel-explain-verify   # until merged to main
 
-# 2. (Later) Azure / Foundry — not needed for fixtures, replay, or detect
+# 2. (Later) Azure / Foundry — not needed for template explainer or verifier
 # cp .env.example .env
 
 # 3. Demo data + realism
 python -m generator.build_demo_data
 
-# 4. Pipeline smoke
+# 4. Pipeline + explain/verify smoke
 python -m pipeline.replay --instant
 python -m pipeline.detect
+python -m agents.run_explain_verify
 
 # 5. API + UI — TODO (Eric)
 ```
@@ -228,11 +222,11 @@ python -m pipeline.detect
 ```
 mechi-yako/
 ├── data/           # Demo match JSON + fact-layer fixtures (Posh: consume these)
-├── docs/           # Event schema v1
+├── docs/           # Event schema + claim schema
 ├── generator/      # Scripted demo match builder + realism report
-├── pipeline/       # Replay, state aggregator, moment detector (Daniel libs)
+├── pipeline/       # Replay, state aggregator, moment detector (Daniel)
+├── agents/         # Explainer + verifier (Daniel); persona/narrator soon — Eric
 ├── TEAM_TASKS.md   # Daniel vs Posh ownership
-├── agents/         # (soon) explainer, verifier, persona, narrator, QA
 ├── lexicon/        # (soon) Kiswahili lexicon — Eric
 ├── api/            # (soon) FastAPI — Eric
 ├── web/            # (soon) React UI — shared / alternate
@@ -250,7 +244,8 @@ mechi-yako/
 - [x] Replay / event stream library (`pipeline/replay.py`)
 - [x] Match-state aggregator (`pipeline/state.py`)
 - [x] Moment detection — deterministic (`pipeline/moments.py`)
-- [ ] Moment **explanation** (explainer agent) + verifier
+- [x] Claim schema + template explainer + deterministic verifier (`agents/`, `docs/claim-schema.md`)
+- [ ] Foundry-backed explainer (swap-in; schema unchanged)
 - [ ] Persona engine (three personas)
 - [ ] Kiswahili narration and lexicon
 - [ ] Front end with persona and language switcher
