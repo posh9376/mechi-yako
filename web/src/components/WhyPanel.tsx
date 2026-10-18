@@ -1,4 +1,4 @@
-import type { MatchEvent, Moment } from "../types";
+import type { ExplanationClaimDecision, MatchEvent, Moment } from "../types";
 import type { NarrationState } from "./MomentDetail";
 
 const CONTEXT_KEYS = new Set(["zone", "player", "metric", "milestone"]);
@@ -14,9 +14,33 @@ type ClaimRow = {
   claimed: unknown;
   status: "approved" | "corrected" | "blocked" | "pending";
   detail?: string;
+  sentence?: string;
 };
 
-function buildClaimRows(moment: Moment, narration: NarrationState): ClaimRow[] {
+function rowsFromExplanation(narration: NarrationState): ClaimRow[] | null {
+  if (narration.status !== "ready" || !narration.narration.explanation) return null;
+  const { claims, verifications } = narration.narration.explanation;
+  const byMetric = new Map(verifications.map((v) => [v.metric, v]));
+  return claims.map((c) => {
+    const v: ExplanationClaimDecision | undefined = byMetric.get(c.metric);
+    if (!v) {
+      return { metric: c.metric, claimed: c.value, status: "pending", sentence: c.sentence };
+    }
+    const detail =
+      v.status === "corrected"
+        ? `${String(v.claimed)} → ${String(v.corrected_value ?? v.recomputed)}`
+        : v.reason;
+    return {
+      metric: c.metric,
+      claimed: c.value,
+      status: v.status,
+      detail,
+      sentence: c.sentence ?? v.sentence,
+    };
+  });
+}
+
+function rowsFromStats(moment: Moment, narration: NarrationState): ClaimRow[] {
   const stats = moment.stats;
   const rows: ClaimRow[] = [];
   const verification = narration.status === "ready" ? narration.narration.verification : undefined;
@@ -68,24 +92,58 @@ export function WhyPanel({ moment, events, narration }: Props) {
 
   const cited = resolveEvents(moment, events);
   const missing = moment.event_ids.length - cited.length;
-  const claims = buildClaimRows(moment, narration);
+  const fromExplainer = rowsFromExplanation(narration);
+  const claims = fromExplainer ?? rowsFromStats(moment, narration);
+  const explanation = narration.status === "ready" ? narration.narration.explanation : undefined;
   const verification = narration.status === "ready" ? narration.narration.verification : undefined;
+  const summary = explanation?.summary;
 
   return (
     <section className="why" aria-label="Why panel" data-testid="why-panel">
       <div className="why__header">
         <h2 className="why__title">Why?</h2>
-        <p className="why__lede">Every on-screen claim cites raw events and a verifier decision.</p>
+        <p className="why__lede">
+          {fromExplainer
+            ? "Explainer claims (Daniel) verified against raw events, then shown to fans."
+            : "Every on-screen claim cites raw events and a verifier decision."}
+        </p>
+        {explanation && (
+          <p className="why__source muted" data-testid="why-explainer-source">
+            {explanation.explainer} · {explanation.summary_en}
+          </p>
+        )}
       </div>
 
-      {verification && (
+      {(summary || verification) && (
         <div className="why__summary" data-testid="why-summary">
-          <VerifierBadge status="approved" label={`${verification.approved} approved`} />
-          {verification.corrected.length > 0 && (
-            <VerifierBadge status="corrected" label={`${verification.corrected.length} corrected`} />
-          )}
-          {verification.blocked.length > 0 && (
-            <VerifierBadge status="blocked" label={`${verification.blocked.length} blocked`} />
+          {summary ? (
+            <>
+              <VerifierBadge status="approved" label={`${summary.approved} approved`} />
+              {summary.corrected > 0 && (
+                <VerifierBadge status="corrected" label={`${summary.corrected} corrected`} />
+              )}
+              {summary.blocked > 0 && (
+                <VerifierBadge status="blocked" label={`${summary.blocked} blocked`} />
+              )}
+            </>
+          ) : (
+            verification && (
+              <>
+                <VerifierBadge status="approved" label={`${verification.approved} approved`} />
+                {verification.corrected.length > 0 && (
+                  <VerifierBadge
+                    status="corrected"
+                    label={`${verification.corrected.length} corrected`}
+                  />
+                )}
+                {verification.blocked.length > 0 && (
+                  <VerifierBadge
+                    status="blocked"
+                    label={`${verification.blocked.length} blocked`}
+                  />
+                )}
+              </>
+            )
           )}
         </div>
       )}
@@ -102,6 +160,7 @@ export function WhyPanel({ moment, events, narration }: Props) {
                   <VerifierBadge status={c.status} label={c.status} />
                   <span className="why__claim-metric">{c.metric}</span>
                   <span className="why__claim-value">{formatValue(c.claimed)}</span>
+                  {c.sentence && <span className="why__claim-sentence">{c.sentence}</span>}
                   {c.detail && <span className="why__claim-detail">{c.detail}</span>}
                 </li>
               ))}

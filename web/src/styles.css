@@ -474,10 +474,21 @@ select {
   grid-template-columns: auto 1fr auto;
 }
 
+.why__claim-sentence,
 .why__claim-detail {
   grid-column: 1 / -1;
   color: var(--muted);
   font-size: 0.78rem;
+}
+
+.why__claim-sentence {
+  color: var(--text);
+  font-size: 0.86rem;
+}
+
+.why__source {
+  margin: 0;
+  font-size: 0.8rem;
 }
 
 .why__claim-metric {

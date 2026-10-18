@@ -74,10 +74,44 @@ export interface VerificationSummary {
   blocked: string[];
 }
 
+/** Daniel's TemplateExplainer output, verified for the Why? panel. */
+export interface ExplanationClaimDecision {
+  moment_id: string;
+  metric: string;
+  claimed: unknown;
+  event_ids: string[];
+  recomputed: unknown;
+  status: "approved" | "corrected" | "blocked";
+  reason: string;
+  sentence?: string;
+  claim_id?: string;
+  corrected_value?: unknown;
+  checker?: string;
+}
+
+export interface ExplanationPackage {
+  schema_version: string;
+  match_id: string;
+  moment_id: string;
+  summary_en: string;
+  claims: {
+    id: string;
+    metric: string;
+    value: unknown;
+    sentence: string;
+    event_ids: string[];
+  }[];
+  verifications: ExplanationClaimDecision[];
+  summary: { approved: number; corrected: number; blocked: number };
+  explainer: string;
+}
+
 export interface Narration {
   narrative: Narrative;
   qa: QaResult;
   verification?: VerificationSummary;
+  /** Present when API/cached bundle includes Daniel's explainer. */
+  explanation?: ExplanationPackage;
 }
 
 export interface NarrateRequest {

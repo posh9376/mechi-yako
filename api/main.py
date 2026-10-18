@@ -13,7 +13,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from api import data
 from api.claims import AgentsClaimChecker, AuditLog, Claim, claims_for_moment, verify_moment
 from api.feed import stream_match
-from api.narration import NarrationError, narrate, options
+from api.narration import NarrationError, explain_moment, narrate, options
 from pipeline.clock import parse_clock
 from pipeline.replay import MatchReplay
 from pipeline.state import MatchStateAggregator
@@ -171,6 +171,17 @@ def create_app() -> FastAPI:
             )
         except NarrationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from None
+
+    @app.get("/matches/{match_id}/moments/{moment_id}/explain")
+    def get_explain(
+        match_id: str,
+        moment_id: str,
+        source: data.MomentSource = Query("fixture"),
+    ) -> dict:
+        """Daniel's template explainer + verifier (no persona rewrite)."""
+        doc = data.get_match_doc(match_id)
+        moment = data.get_moment(match_id, moment_id, source)
+        return explain_moment(moment, doc, app.state.checker)
 
     @app.get("/matches/{match_id}/claims")
     def get_claims(match_id: str, source: data.MomentSource = Query("live")) -> dict:
