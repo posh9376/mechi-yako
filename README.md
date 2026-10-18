@@ -55,12 +55,25 @@ python -m pipeline.replay --start 55:00 --end 65:00 --speed 30
 python -m pipeline.detect
 ```
 
-### Suggested next steps for Eric
+### What Posh shipped (Oct 17), branch `feature/posh-api-foundation`
 
-1. Scaffold **`api/`** (FastAPI) that serves `data/fixtures/m-demo-001.moments.json` and/or calls `MomentDetector.detect_all`.  
-2. Scaffold **`web/`** against those fixtures (persona/language switches can be UI-only at first).  
-3. Start **`lexicon/sw.yaml`** with demo-match terms only (~40–60).  
-4. Backend tests under `tests/` are yours per the task split.
+| Piece | Where | Notes |
+|---|---|---|
+| Fact-layer HTTP API | [`api/`](api/) | FastAPI: match, events, state, moments, SSE feed, narrate, claims, audit, health |
+| Personas | [`agents/persona/`](agents/persona/) | Analyst, casual fan, newcomer, plus the deterministic English writer |
+| Kiswahili narrator | [`agents/narrator/sw.py`](agents/narrator/sw.py) | Native templates in formal, casual and simple registers |
+| Language QA | [`agents/language_qa/`](agents/language_qa/) | Pass/flag badge source |
+| Kiswahili lexicon | [`lexicon/sw.yaml`](lexicon/sw.yaml) | ~50 demo terms, register guides, review **pending** |
+| Claims seam | [`api/claims.py`](api/claims.py) | Deterministic checker and audit log, ready to swap for Daniel's verifier |
+| Web app | [`web/`](web/) | Vite + React + TS match view, persona/language/register switches, QA badge |
+| Cached demo | [`web/public/demo-bundle.json`](web/public/demo-bundle.json) | Shape in [`docs/cache-bundle.md`](docs/cache-bundle.md) |
+| Backend tests | [`tests/`](tests/) | pipeline, generator, API, agents, wrong-stat |
+| Storyboard | [`docs/demo-storyboard.md`](docs/demo-storyboard.md) | Shot list, pitch and submission checklists |
+
+**For Daniel:**
+- **Fixture data note.** `mom-pressure-01` in the fixture has `window_minutes: 7`, while its cited events span 6.7 minutes. The verifier marks it `corrected`, and the UI and narrations show 6.7. Details are in [`docs/cache-bundle.md`](docs/cache-bundle.md#known-data-note-for-daniel).
+- **Verifier swap.** Your verifier can replace `DeterministicClaimChecker` behind the `ClaimChecker` protocol in `api/claims.py`. The HTTP shape stays the same.
+- **Deploy smoke.** `GET /health` returns the loaded match ID and the moment counts.
 
 Daniel’s next slice (later): claim schema + explainer + verifier (agentic / Foundry — mid-week).
 
@@ -126,7 +139,9 @@ flowchart LR
 | **Verifier** | Recomputes every claim from raw events and approves, corrects or blocks it. |
 | **Persona Writer** | Renders verified facts for a persona (analyst, casual fan, newcomer). |
 | **Kiswahili Narrator** | Composes the narrative natively in Kiswahili using the lexicon and the selected register. |
-| **Language QA** | Back-translates to English and checks the result against the fact layer. |
+| **Language QA** | Checks every narrative against the fact layer (numbers, stats, event IDs, names, lexicon terms) and returns pass or flag. A model back-translation check can plug in behind the same function later. |
+
+Today the Persona Writer, Kiswahili Narrator, Language QA and a stand-in Verifier run as deterministic code behind stable interfaces, so the demo works with no model calls. Foundry-backed agents replace them without changing the HTTP shape.
 
 ---
 
@@ -134,10 +149,36 @@ flowchart LR
 
 Most pipelines write in English and translate. Mechi Yako generates in the target language from structured facts.
 
-- **Football lexicon.** A hand-built glossary of terms and idioms (`lexicon/sw.yaml`) is injected into prompts so terms are consistent.
-- **Registers.** Formal broadcast, casual banter, and simple explainer.
-- **Quality loop.** Output is back-translated and compared with the fact layer. Mismatches are flagged rather than shown.
-- **Native review.** Lexicon entries and sample outputs are reviewed by a Kiswahili speaker before release. See [Known limitations](#known-limitations).
+- **Football lexicon.** [`lexicon/sw.yaml`](lexicon/sw.yaml) holds 50 demo-match terms. Each has the English and Kiswahili forms, inflected forms for matching, and a one-line gloss in both languages. It also maps each moment type to the terms its narrative must use (a goal must say *bao*, a press must say *kubana* and *kunyang'anya mpira*).
+- **Registers.** Formal broadcast (*Dakika ya 63, Omar Diallo anafunga bao la kusawazisha…*), casual banter (*Goooli! Omar Diallo anatikisa nyavu…*), and simple explainer for newcomers. The lexicon carries a short style guide and sample lines per register.
+- **Native composition.** [`agents/narrator/sw.py`](agents/narrator/sw.py) builds each sentence from the verified facts with Kiswahili templates. It never sees the English text. Small counts are written as words (*mara tano*), the way a commentator would say them.
+- **Quality loop.** [Language QA](#language-qa-rule) checks every Kiswahili line against the same facts as the English one, including Kiswahili number words and English words leaking into the text.
+- **Native review: pending.** No native speaker has reviewed the lexicon or the generated lines yet, and the lexicon says `review: pending` until one has. See [Known limitations](#known-limitations).
+
+### Personas and languages
+
+The persona changes depth and vocabulary. The facts stay the same.
+
+| Persona | Default register | Keeps | Adds |
+|---|---|---|---|
+| **Analyst** | Formal broadcast | Counts, time windows, scorer and minute | A stats sentence built from the verified numbers |
+| **Casual fan** | Casual banter | The story and the score | Nothing extra; raw counts are dropped |
+| **Newcomer** | Simple explainer | The story in plain words | A one-line gloss of the key term from the lexicon |
+
+Any persona can use any register. **Persona default** in the UI picks the register in the table. English and Kiswahili share one fact-composition step, so both languages always state the same numbers, names and event IDs.
+
+### Language QA rule
+
+A narrative gets **QA pass** only if all of these hold. Otherwise it gets **QA flag** with the reasons shown under the text.
+
+1. Every number in the text, in digits or as a word (*five*, *tano*), matches a verified stat, the score, or a moment minute.
+2. Every value in `stats_used` equals the verified moment stat.
+3. The narrative cites at least one event, and every cited event ID belongs to the moment.
+4. Every player ID in `entities_used` is one the moment references.
+5. The text uses every lexicon term required for that moment type.
+6. Kiswahili text contains no English function words (*the*, *and*, *with*…).
+
+Before writing, the narration endpoint runs the claim checker on the moment. Corrected values are used in the text, and blocked stats are never written.
 
 ---
 
@@ -194,7 +235,8 @@ AI commentary is only useful on screen if it is right. Mechi Yako uses a **claim
 | State and audit log | Azure Cosmos DB |
 | Speech (optional) | Azure AI Speech |
 | Observability | Application Insights, Foundry tracing |
-| Front end | React + TypeScript (Vite) — planned |
+| API | FastAPI + uvicorn (`api/`), SSE for the live feed |
+| Front end | React + TypeScript (Vite) in `web/` |
 | Local stream | In-process queue (`pipeline/queue.py`); Service Bus optional later |
 | Dev tooling | GitHub Copilot Agent Mode |
 
@@ -202,7 +244,7 @@ AI commentary is only useful on screen if it is right. Mechi Yako uses a **claim
 
 ## Getting started
 
-Python 3.9+ is enough for the current libraries (no third-party deps required yet).
+The pipeline and generator use the standard library only and run on Python 3.9+. The API and tests need Python 3.10+ and `requirements-dev.txt`. The web app needs Node 18+.
 
 ```bash
 # 1. Clone
@@ -220,7 +262,58 @@ python -m generator.build_demo_data
 python -m pipeline.replay --instant
 python -m pipeline.detect
 
-# 5. API + UI — TODO (Eric)
+# 5. API (http://127.0.0.1:8000, interactive docs at /docs)
+pip install -r requirements-dev.txt
+python -m uvicorn api.main:app --reload --port 8000
+
+# 6. Web app (http://127.0.0.1:5173), in a second terminal
+cd web && npm install && npm run dev
+
+# 7. Tests and cache freshness
+pytest
+python -m api.build_cache --check
+```
+
+### Web app modes
+
+| How you open it | Data source |
+|---|---|
+| `npm run dev` with no `VITE_API_BASE_URL` | **Fixtures.** Match JSON and fixture moments are bundled into the app. Narrations come from the cached bundle. No backend needed. |
+| `VITE_API_BASE_URL=http://127.0.0.1:8000 npm run dev` | **API.** Live-detected moments (7) and live `/narrate` calls. Copy `web/.env.example` to `web/.env.local` to make this permanent. |
+| API mode plus `?moments=fixture` | API, pinned to the five fixture moments (what the demo video uses). |
+| `?demo=cached` | **Cached demo.** Reads `web/public/demo-bundle.json` and makes no API calls. Used when the API is down. |
+
+If the API is unreachable, the error panel offers **Try again** and **Use cached demo**. The header always shows which source is active.
+
+The API reads `MECHI_CORS_ORIGINS` (comma-separated) for allowed origins. The default allows the Vite dev server on `localhost` and `127.0.0.1` port 5173.
+
+### API
+
+All match routes take `match_id` (`m-demo-001` today). Moment routes take `source=live` (default; `MomentDetector.detect_all`) or `source=fixture` (the fact-layer fixture). The two sources use different moment IDs.
+
+| Method | Route | Returns |
+|---|---|---|
+| GET | `/health` | `status`, loaded `match_id`, `schema_version`, event count, fixture and live moment counts |
+| GET | `/matches` | Available match IDs |
+| GET | `/matches/{id}` | Match metadata, `schema_version`, event count |
+| GET | `/matches/{id}/events?start=55:00&end=65:00` | Events in a clock window (inclusive) |
+| GET | `/matches/{id}/state?at=63:00` | Aggregated match state up to a clock, or full time |
+| GET | `/matches/{id}/moments?source=live` | Detected moments with `event_ids` and `stats` |
+| GET | `/matches/{id}/feed?speed=120&instant=false&start=&end=` | SSE stream of `match_event`, `moment` and `done` frames |
+| GET | `/personas` | Personas, languages, registers per language, lexicon version and review status |
+| POST | `/matches/{id}/narrate` | `{moment_id, persona, language, register?, source?}` → narrative, QA result, verification summary |
+| GET | `/matches/{id}/claims?source=live` | Every moment stat as a verified claim, plus a summary |
+| POST | `/matches/{id}/claims/check` | `{moment_id, metric, value, event_ids?, source?}` → approved, corrected or blocked; written to the audit log |
+| GET | `/matches/{id}/audit` | Audit log entries for the match (in memory, reset on restart) |
+
+Unknown match or moment IDs return 404. Malformed clocks and invalid persona, language or register values return 422.
+
+Example:
+
+```bash
+curl -s -X POST http://127.0.0.1:8000/matches/m-demo-001/narrate \
+  -H 'content-type: application/json' \
+  -d '{"moment_id": "mom-goal-equaliser-01", "persona": "casual", "language": "sw", "source": "fixture"}'
 ```
 
 ### Project structure
@@ -228,16 +321,20 @@ python -m pipeline.detect
 ```
 mechi-yako/
 ├── data/           # Demo match JSON + fact-layer fixtures (Posh: consume these)
-├── docs/           # Event schema v1
+├── docs/           # Event schema v1, cache bundle shape, demo storyboard
 ├── generator/      # Scripted demo match builder + realism report
 ├── pipeline/       # Replay, state aggregator, moment detector (Daniel libs)
 ├── TEAM_TASKS.md   # Daniel vs Posh ownership
-├── agents/         # (soon) explainer, verifier, persona, narrator, QA
-├── lexicon/        # (soon) Kiswahili lexicon — Eric
-├── api/            # (soon) FastAPI — Eric
-├── web/            # (soon) React UI — shared / alternate
+├── agents/
+│   ├── persona/      # Persona definitions, shared fact layer, English writer — Eric
+│   ├── narrator/     # Kiswahili narrator — Eric
+│   ├── language_qa/  # Pass/flag QA against the fact layer — Eric
+│   └── (soon)        # explainer, verifier — Daniel
+├── lexicon/        # Kiswahili lexicon (sw.yaml) + loader — Eric
+├── api/            # FastAPI app, claims/audit seam, cache bundle builder — Eric
+├── web/            # Vite + React + TS match view — Eric (Why? panel / lower third: Daniel)
 ├── infra/          # (later) Azure deploy — Daniel
-└── tests/          # (soon) backend tests — Eric
+└── tests/          # Backend tests: api, agents, pipeline, generator — Eric
 ```
 
 ---
@@ -250,12 +347,19 @@ mechi-yako/
 - [x] Replay / event stream library (`pipeline/replay.py`)
 - [x] Match-state aggregator (`pipeline/state.py`)
 - [x] Moment detection — deterministic (`pipeline/moments.py`)
+- [x] Fact-layer HTTP API with SSE live feed (`api/`)
+- [x] Persona engine, three personas (deterministic writer; `agents/persona/`)
+- [x] Kiswahili narration and lexicon (`agents/narrator/`, `lexicon/sw.yaml`)
+- [x] Language QA badge (`agents/language_qa/`)
+- [x] Claims check and audit log with a deterministic checker (`api/claims.py`)
+- [x] Front end with persona, language and register switches (`web/`)
+- [x] Cached demo bundle for API-down runs (`web/public/demo-bundle.json`)
+- [x] Backend tests (`tests/`)
 - [ ] Moment **explanation** (explainer agent) + verifier
-- [ ] Persona engine (three personas)
-- [ ] Kiswahili narration and lexicon
-- [ ] Front end with persona and language switcher
+- [ ] Native-speaker review of the Kiswahili lexicon and demo lines
+- [ ] Foundry-backed writer and QA adapters
 - [ ] Deployed demo link
-- [ ] Demo video
+- [ ] Demo video ([storyboard](docs/demo-storyboard.md))
 
 ---
 
@@ -281,7 +385,9 @@ mechi-yako/
 
 ## Known limitations
 
-- Kiswahili quality is limited to the lexicon and registers reviewed so far. Other languages and dialects are future work.
+- Kiswahili quality is limited to the lexicon and registers written so far, and none of it has had native-speaker review yet. Other languages and dialects are future work.
+- Narration is template-based today. Lines are accurate and consistent but less varied than model output.
+- The audit log is in memory and resets when the API restarts.
 - Synthetic matches approximate real football. They are not a statistical model of any real league.
 - `TODO`: add limitations as they are discovered.
 
