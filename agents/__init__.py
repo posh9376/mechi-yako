@@ -1,4 +1,4 @@
-"""Agents (Daniel: explainer + verifier libs; Posh: persona / narrator later)."""
+"""Agents: explainer + verifier (Daniel); persona, narrator, language QA (Posh)."""
 
 from agents.explainer import TemplateExplainer
 from agents.verifier import ClaimVerifier, VerificationResult
