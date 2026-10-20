@@ -4,13 +4,23 @@ import type { Language, Moment } from "../types";
 
 interface Props {
   moments: Moment[];
-  totalMoments: number;
+  /** Null while the total is unknown, as in a live feed. */
+  totalMoments: number | null;
+  /** Shown instead of the default while a live feed has produced no moments. */
+  waitingMessage?: string;
   selectedId: string | null;
   language: Language;
   onSelect: (id: string) => void;
 }
 
-export function MomentList({ moments, totalMoments, selectedId, language, onSelect }: Props) {
+export function MomentList({ moments, totalMoments, waitingMessage, selectedId, language, onSelect }: Props) {
+  if (totalMoments === null && moments.length === 0) {
+    return (
+      <section className="moments moments--empty" aria-label="Moments">
+        <p>{waitingMessage ?? "Waiting for the first moment…"}</p>
+      </section>
+    );
+  }
   if (totalMoments === 0) {
     return (
       <section className="moments moments--empty" aria-label="Moments">

@@ -1,5 +1,7 @@
 import type {
   DataSource,
+  FeedHandlers,
+  FeedOptions,
   MatchData,
   MatchEvent,
   MatchMeta,
@@ -8,6 +10,7 @@ import type {
   NarrateRequest,
   Narration,
 } from "../types";
+import { feedUrl, openFeed } from "./feed";
 
 const MATCH_ID = "m-demo-001";
 
@@ -39,6 +42,13 @@ export function createApiSource(baseUrl: string, momentSource: MomentSource = "l
   return {
     kind: "api",
     label: `API ${base}`,
+    momentSource,
+    loadMeta() {
+      return getJson<{ match: MatchMeta }>(matchUrl);
+    },
+    openFeed(opts: FeedOptions, handlers: FeedHandlers) {
+      return openFeed(feedUrl(matchUrl, opts), handlers);
+    },
     async loadMatch(): Promise<MatchData> {
       const [meta, events, moments] = await Promise.all([
         getJson<{ match: MatchMeta }>(matchUrl),

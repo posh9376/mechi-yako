@@ -164,6 +164,102 @@ input {
   accent-color: var(--accent);
 }
 
+.modebar {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.live {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+}
+
+.live__pill {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-variant-numeric: tabular-nums;
+  border-radius: 999px;
+  padding: 4px 10px;
+  min-width: 92px;
+  text-align: center;
+  background: color-mix(in srgb, var(--muted) 22%, transparent);
+  color: var(--muted);
+}
+
+.live__pill--live {
+  background: color-mix(in srgb, var(--danger) 22%, transparent);
+  color: var(--danger);
+}
+
+.live__pill--live::before {
+  content: "";
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 6px;
+  border-radius: 50%;
+  background: currentColor;
+  vertical-align: 1px;
+  animation: live-pulse 1.2s ease-in-out infinite;
+}
+
+.live__pill--connecting,
+.live__pill--paused {
+  background: color-mix(in srgb, var(--warn) 20%, transparent);
+  color: var(--warn);
+}
+
+.live__pill--ended {
+  background: color-mix(in srgb, var(--accent) 20%, transparent);
+  color: var(--accent);
+}
+
+.live__pill--error {
+  background: color-mix(in srgb, var(--danger) 30%, transparent);
+  color: var(--text);
+}
+
+@keyframes live-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.live__progress {
+  flex: 1 1 220px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+
+.live__progress-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width 100ms linear;
+}
+
+.live__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--danger);
+  background: color-mix(in srgb, var(--danger) 12%, var(--panel));
+}
+
 .replay__speed,
 .switches__register {
   display: flex;
@@ -661,5 +757,10 @@ select {
 
   .app__source {
     margin-left: 0;
+  }
+
+  .live__progress {
+    flex-basis: 100%;
+    order: 10;
   }
 }

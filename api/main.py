@@ -12,7 +12,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 from api import data
 from api.claims import AgentsClaimChecker, AuditLog, Claim, claims_for_moment, verify_moment
-from api.feed import stream_match
+from api.feed import stream_match, until_disconnect
 from api.narration import NarrationError, explain_moment, narrate, options
 from pipeline.clock import parse_clock
 from pipeline.replay import MatchReplay
@@ -147,7 +147,7 @@ def create_app() -> FastAPI:
         _validate_clock(end, "end")
         frames = stream_match(doc, speed=speed, instant=instant, start_clock=start, end_clock=end)
         return StreamingResponse(
-            frames,
+            until_disconnect(frames),
             media_type="text/event-stream",
             headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
         )

@@ -62,4 +62,4 @@ def test_personas_options(client):
     assert {p["id"] for p in body["personas"]} == {"analyst", "casual", "newcomer"}
     assert body["languages"] == ["en", "sw"]
     assert "formal" in body["registers"]["sw"]
-    assert body["lexicon"]["review"] == "pending"
+    assert body["lexicon"]["review"] == "approved"

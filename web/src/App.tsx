@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { FULL_TIME_S, parseClock, scoreAt } from "./clock";
+import { LiveControls } from "./components/LiveControls";
 import { LowerThird } from "./components/LowerThird";
 import { MomentDetail, type NarrationState } from "./components/MomentDetail";
 import { MomentList } from "./components/MomentList";
@@ -7,12 +8,16 @@ import { ReplayControls } from "./components/ReplayControls";
 import { ScoreBar } from "./components/ScoreBar";
 import { Switches } from "./components/Switches";
 import { WhyPanel } from "./components/WhyPanel";
-import type { DataSource, Language, MatchData, PersonaId, Register } from "./types";
+import { useLiveFeed } from "./live/useLiveFeed";
+import type { DataSource, Language, MatchData, MatchMeta, Moment, PersonaId, Register } from "./types";
 
-type LoadState =
+type LoadState<T> =
+  | { status: "idle" }
   | { status: "loading" }
   | { status: "error"; message: string }
-  | { status: "ready"; data: MatchData };
+  | { status: "ready"; data: T };
+
+type Mode = "live" | "replay";
 
 const TICK_MS = 100;
 
@@ -21,8 +26,19 @@ interface Props {
   onUseCached?: () => void;
 }
 
+function errorMessage(err: unknown): string {
+  return err instanceof Error ? err.message : String(err);
+}
+
+function byPeak(a: Moment, b: Moment): number {
+  return parseClock(a.t_peak) - parseClock(b.t_peak) || b.significance - a.significance;
+}
+
 export function App({ source, onUseCached }: Props) {
-  const [load, setLoad] = useState<LoadState>({ status: "loading" });
+  const liveCapable = source.momentSource === "live" && !!source.openFeed && !!source.loadMeta;
+  const [mode, setMode] = useState<Mode>(liveCapable ? "live" : "replay");
+  const [meta, setMeta] = useState<LoadState<MatchMeta>>({ status: "idle" });
+  const [replay, setReplay] = useState<LoadState<MatchData>>({ status: "idle" });
   const [clockS, setClockS] = useState(FULL_TIME_S);
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(120);
@@ -32,18 +48,29 @@ export function App({ source, onUseCached }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [narration, setNarration] = useState<NarrationState>({ status: "idle" });
   const [narrationNonce, setNarrationNonce] = useState(0);
+  const live = useLiveFeed(source, speed);
 
-  const loadMatch = useCallback(() => {
-    setLoad({ status: "loading" });
+  const loadMeta = useCallback(() => {
+    if (!source.loadMeta) return;
+    setMeta({ status: "loading" });
     source
-      .loadMatch()
-      .then((data) => setLoad({ status: "ready", data }))
-      .catch((err: unknown) =>
-        setLoad({ status: "error", message: err instanceof Error ? err.message : String(err) }),
-      );
+      .loadMeta()
+      .then(({ match }) => setMeta({ status: "ready", data: match }))
+      .catch((err: unknown) => setMeta({ status: "error", message: errorMessage(err) }));
   }, [source]);
 
-  useEffect(loadMatch, [loadMatch]);
+  const loadReplay = useCallback(() => {
+    setReplay({ status: "loading" });
+    source
+      .loadMatch()
+      .then((data) => setReplay({ status: "ready", data }))
+      .catch((err: unknown) => setReplay({ status: "error", message: errorMessage(err) }));
+  }, [source]);
+
+  useEffect(() => {
+    if (mode === "live" && meta.status === "idle") loadMeta();
+    if (mode === "replay" && replay.status === "idle") loadReplay();
+  }, [mode, meta.status, replay.status, loadMeta, loadReplay]);
 
   useEffect(() => {
     if (!playing) return;
@@ -57,14 +84,16 @@ export function App({ source, onUseCached }: Props) {
     return () => window.clearInterval(id);
   }, [playing, speed]);
 
-  const data = load.status === "ready" ? load.data : null;
+  const replayData = replay.status === "ready" ? replay.data : null;
+  const isLive = mode === "live";
+  const shownClockS = isLive ? live.clockS : clockS;
+  const following = isLive ? live.status === "live" : playing;
 
   const visibleMoments = useMemo(() => {
-    if (!data) return [];
-    return data.moments
-      .filter((m) => parseClock(m.t_peak) <= clockS)
-      .sort((a, b) => parseClock(a.t_peak) - parseClock(b.t_peak) || b.significance - a.significance);
-  }, [data, clockS]);
+    if (isLive) return [...live.moments].sort(byPeak);
+    if (!replayData) return [];
+    return replayData.moments.filter((m) => parseClock(m.t_peak) <= clockS).sort(byPeak);
+  }, [isLive, live.moments, replayData, clockS]);
 
   // Follow the newest moment while playing; keep the user's pick when it is still visible.
   const lastVisibleCount = useRef(0);
@@ -74,15 +103,16 @@ export function App({ source, onUseCached }: Props) {
     const stillVisible = visibleMoments.some((m) => m.id === selectedId);
     if (visibleMoments.length === 0) {
       if (selectedId !== null) setSelectedId(null);
-    } else if (!stillVisible || (playing && grew)) {
+    } else if (!stillVisible || (following && grew)) {
       setSelectedId(visibleMoments[visibleMoments.length - 1].id);
     }
-  }, [visibleMoments, selectedId, playing]);
+  }, [visibleMoments, selectedId, following]);
 
   const selected = visibleMoments.find((m) => m.id === selectedId) ?? null;
+  const selectedMomentId = selected?.id ?? null;
 
   useEffect(() => {
-    if (!selected) {
+    if (!selectedMomentId) {
       setNarration({ status: "idle" });
       return;
     }
@@ -90,7 +120,7 @@ export function App({ source, onUseCached }: Props) {
     setNarration({ status: "loading" });
     source
       .narrate({
-        momentId: selected.id,
+        momentId: selectedMomentId,
         persona,
         language,
         register: register === "auto" ? null : register,
@@ -101,12 +131,12 @@ export function App({ source, onUseCached }: Props) {
       })
       .catch((err: unknown) => {
         if (cancelled) return;
-        setNarration({ status: "error", message: err instanceof Error ? err.message : String(err) });
+        setNarration({ status: "error", message: errorMessage(err) });
       });
     return () => {
       cancelled = true;
     };
-  }, [source, selected, persona, language, register, narrationNonce]);
+  }, [source, selectedMomentId, persona, language, register, narrationNonce]);
 
   const handlePlayPause = () => {
     if (playing) {
@@ -117,7 +147,44 @@ export function App({ source, onUseCached }: Props) {
     setPlaying(true);
   };
 
-  if (load.status === "loading") {
+  const switchToReplay = () => {
+    setClockS(live.status === "idle" ? FULL_TIME_S : live.clockS);
+    setPlaying(false);
+    live.reset();
+    setMode("replay");
+  };
+
+  const switchToLive = () => {
+    setPlaying(false);
+    live.reset();
+    setMode("live");
+  };
+
+  const modeToggle = liveCapable && (
+    <div className="segmented" role="radiogroup" aria-label="Feed mode">
+      <button
+        type="button"
+        role="radio"
+        aria-checked={isLive}
+        className={isLive ? "segmented__item is-active" : "segmented__item"}
+        onClick={() => !isLive && switchToLive()}
+      >
+        Live
+      </button>
+      <button
+        type="button"
+        role="radio"
+        aria-checked={!isLive}
+        className={!isLive ? "segmented__item is-active" : "segmented__item"}
+        onClick={() => isLive && switchToReplay()}
+      >
+        Replay
+      </button>
+    </div>
+  );
+
+  const pending = isLive ? meta : replay;
+  if (pending.status === "idle" || pending.status === "loading") {
     return (
       <main className="app app--center">
         <p className="muted">Loading match…</p>
@@ -125,16 +192,21 @@ export function App({ source, onUseCached }: Props) {
     );
   }
 
-  if (load.status === "error") {
+  if (pending.status === "error") {
     return (
       <main className="app app--center">
         <div className="panel panel--error" role="alert">
           <h1>Could not load the match</h1>
-          <p>{load.message}</p>
+          <p>{pending.message}</p>
           <div className="panel__actions">
-            <button type="button" className="btn btn--primary" onClick={loadMatch}>
+            <button type="button" className="btn btn--primary" onClick={isLive ? loadMeta : loadReplay}>
               Try again
             </button>
+            {!isLive && liveCapable && (
+              <button type="button" className="btn" onClick={switchToLive}>
+                Back to live
+              </button>
+            )}
             {onUseCached && (
               <button type="button" className="btn" onClick={onUseCached}>
                 Use cached demo
@@ -146,8 +218,14 @@ export function App({ source, onUseCached }: Props) {
     );
   }
 
-  const { match, events, moments } = load.data;
-  const score = scoreAt(match, events, clockS);
+  const match = isLive ? (pending.data as MatchMeta) : (pending.data as MatchData).match;
+  const events = isLive ? live.events : (pending.data as MatchData).events;
+  const score = isLive ? live.score : scoreAt(match, events, clockS);
+  const sourceLabel = isLive
+    ? `${source.label} · live feed`
+    : liveCapable
+      ? `${source.label} · live moments (replay)`
+      : `${source.label} · ${(pending.data as MatchData).momentSource} moments`;
 
   return (
     <main className="app">
@@ -155,21 +233,36 @@ export function App({ source, onUseCached }: Props) {
         <span className="app__logo">Mechi Yako</span>
         <span className="app__tagline">One match, told your way, in your language.</span>
         <span className="app__source" data-testid="source">
-          {source.label} · {load.data.momentSource} moments
+          {sourceLabel}
         </span>
       </div>
-      <ScoreBar match={match} score={score} clockS={clockS} />
-      <ReplayControls
-        clockS={clockS}
-        playing={playing}
-        speed={speed}
-        onPlayPause={handlePlayPause}
-        onSeek={(c) => {
-          setPlaying(false);
-          setClockS(c);
-        }}
-        onSpeed={setSpeed}
-      />
+      <ScoreBar match={match} score={score} clockS={shownClockS} />
+      {modeToggle && <div className="modebar">{modeToggle}</div>}
+      {isLive ? (
+        <LiveControls
+          status={live.status}
+          clockS={live.clockS}
+          speed={speed}
+          error={live.error}
+          onStart={live.start}
+          onPause={live.pause}
+          onResume={live.resume}
+          onSpeed={setSpeed}
+          onSwitchToReplay={switchToReplay}
+        />
+      ) : (
+        <ReplayControls
+          clockS={clockS}
+          playing={playing}
+          speed={speed}
+          onPlayPause={handlePlayPause}
+          onSeek={(c) => {
+            setPlaying(false);
+            setClockS(c);
+          }}
+          onSpeed={setSpeed}
+        />
+      )}
       <Switches
         persona={persona}
         language={language}
@@ -181,7 +274,8 @@ export function App({ source, onUseCached }: Props) {
       <div className="app__columns">
         <MomentList
           moments={visibleMoments}
-          totalMoments={moments.length}
+          totalMoments={isLive ? null : (pending.data as MatchData).moments.length}
+          waitingMessage={live.status === "idle" ? "Press Go live to start the match feed." : undefined}
           selectedId={selectedId}
           language={language}
           onSelect={setSelectedId}
@@ -197,13 +291,13 @@ export function App({ source, onUseCached }: Props) {
       <LowerThird
         match={match}
         score={score}
-        clockS={clockS}
+        clockS={shownClockS}
         moment={selected}
         language={language}
         narration={narration}
       />
       <footer className="app__footer">
-        Synthetic data · fictional clubs and players · Kiswahili lines pending native-speaker review
+        Synthetic data · fictional clubs and players · Kiswahili reviewed by native speakers
       </footer>
     </main>
   );

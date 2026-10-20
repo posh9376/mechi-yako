@@ -82,7 +82,7 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 
 ### Shared with Posh
 - [ ] Register on aka.ms if not done
-- [ ] Kiswahili review of demo lines (read; don’t rewrite lexicon without Posh)
+- [x] Kiswahili review of demo lines (read; don’t rewrite lexicon without Posh) — approved Oct 20
 - [ ] Smoke-test demo path daily from Phase 3
 - [ ] Submission buffer Mon Oct 26
 
@@ -114,7 +114,7 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 - [ ] Help Daniel with cache payload shape / health checks if needed
 
 ### Shared with Daniel
-- [ ] Native review of every demo-match Kiswahili line
+- [x] Native review of every demo-match Kiswahili line — lexicon and demo lines approved Oct 20 (Eric Amenya, Daniel Githumbi)
 - [ ] README API / UX / Kiswahili / Multi-Agent sections
 - [ ] Submit Mon Oct 26; keep demo live through Nov 10
 
