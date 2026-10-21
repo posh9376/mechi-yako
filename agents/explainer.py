@@ -1,4 +1,7 @@
-"""Template explainer — emits schema v1 claims from moments (no Foundry yet)."""
+"""Template explainer — emits schema v1 claims from moments.
+
+Numbers stay here. ``agents.foundry.FoundryExplainer`` may rewrite sentences.
+"""
 
 from __future__ import annotations
 
@@ -8,8 +11,7 @@ from typing import Any
 class TemplateExplainer:
     """Turn fact-layer moments into grounded claims.
 
-    Later: replace ``explain_moment`` body with a Foundry agent that still
-    returns the same claim schema.
+    Foundry may rewrite claim sentences; metric/value/event_ids stay here.
     """
 
     def __init__(self, match_id: str) -> None:

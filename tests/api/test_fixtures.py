@@ -8,6 +8,7 @@ def test_health(client):
     assert body["status"] == "ok"
     assert body["match_id"] == MATCH_ID
     assert body["fixture_moments"] == 5
+    assert body["explainer"]["active"] == "template-v1"
 
 
 def test_match_metadata(client):

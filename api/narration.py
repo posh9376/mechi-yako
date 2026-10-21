@@ -1,15 +1,16 @@
 """Narration pipeline: explain → verify → persona/Kiswahili write → language QA.
 
-Daniel's ``TemplateExplainer`` builds structured claims; the claim checker verifies them
-and the fact-layer stats used by Eric's writers. Both land in the HTTP response so the
-web Why? panel can show explainer output (not only the CLI).
+Daniel's explainer builds structured claims (template numbers, optional Foundry
+sentences); the claim checker verifies them and the fact-layer stats used by
+Eric's writers. Both land in the HTTP response so the web Why? panel can show
+explainer output (not only the CLI).
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from agents.explainer import TemplateExplainer
+from agents.foundry import make_explainer
 from agents.language_qa import check_narrative
 from agents.narrator.sw import TEMPLATES as SW_TEMPLATES
 from agents.narrator.sw import narrate_sw
@@ -46,8 +47,8 @@ def explain_moment(
     doc: dict[str, Any],
     checker: ClaimChecker,
 ) -> dict[str, Any]:
-    """Run Daniel's template explainer and verify each emitted claim."""
-    package = TemplateExplainer(doc["match"]["id"]).explain_moment(moment)
+    """Run Daniel's explainer and verify each emitted claim."""
+    package = make_explainer(doc["match"]["id"]).explain_moment(moment)
     verifications: list[dict[str, Any]] = []
     for raw in package["claims"]:
         claim = Claim(
@@ -67,7 +68,7 @@ def explain_moment(
             status: sum(v["status"] == status for v in verifications)
             for status in ("approved", "corrected", "blocked")
         },
-        "explainer": "template-v1",
+        "explainer": package.get("explainer") or "template-v1",
     }
 
 

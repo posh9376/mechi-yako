@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -26,6 +27,8 @@ DEFAULT_OUT = data.ROOT / "web" / "public" / "demo-bundle.json"
 
 
 def build_bundle(match_id: str = "m-demo-001", source: data.MomentSource = "fixture") -> dict[str, Any]:
+    # Cached bundle stays deterministic even if a local .env enables Foundry.
+    os.environ["MECHI_EXPLAINER"] = "template"
     doc = data.get_match_doc(match_id)
     moments = data.get_moments(match_id, source)
     checker = AgentsClaimChecker()

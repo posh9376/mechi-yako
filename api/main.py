@@ -10,6 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel, ConfigDict, Field
 
+from dotenv import load_dotenv
+
+from agents.foundry import explainer_status
 from api import data
 from api.claims import AgentsClaimChecker, AuditLog, Claim, claims_for_moment, verify_moment
 from api.feed import stream_match, until_disconnect
@@ -17,6 +20,8 @@ from api.narration import NarrationError, explain_moment, narrate, options
 from pipeline.clock import parse_clock
 from pipeline.replay import MatchReplay
 from pipeline.state import MatchStateAggregator
+
+load_dotenv()
 
 DEFAULT_CORS_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
 DEFAULT_MATCH_ID = "m-demo-001"
@@ -82,6 +87,7 @@ def create_app() -> FastAPI:
             "events": len(doc["events"]),
             "fixture_moments": len(fixture["moments"]),
             "live_moments": len(data.get_live_moments(DEFAULT_MATCH_ID)),
+            "explainer": explainer_status(),
         }
 
     @app.get("/matches")

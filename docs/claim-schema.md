@@ -74,5 +74,5 @@ Unknown metrics → **block** with reason `unknown_metric`.
 
 ## Explainer note (v1)
 
-v1 ships a **template explainer** (no Foundry yet) that turns moment `stats` into claims.  
-Swap in a Foundry-backed agent later without changing this schema.
+v1 ships a **template explainer** that turns moment `stats` into claims.  
+Optional Foundry (`gpt-5-mini`) rewrites claim *sentences* only. Metric, value, and `event_ids` stay on the template layer so the verifier never checks LLM output. Set `MECHI_EXPLAINER=foundry` in `.env` (see `.env.example`). On missing credentials or a failed call, the API falls back to templates.
