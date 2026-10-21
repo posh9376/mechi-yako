@@ -8,6 +8,7 @@ export function createFixtureSource(): DataSource {
   return {
     kind: "fixtures",
     label: "Repo fixtures",
+    momentSource: "fixture",
     async loadMatch(): Promise<MatchData> {
       return {
         match: matchDoc.match as unknown as MatchMeta,

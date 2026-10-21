@@ -9,7 +9,7 @@ interface Props {
   onSpeed: (speed: number) => void;
 }
 
-const SPEEDS = [30, 60, 120, 300];
+export const SPEEDS = [30, 60, 120, 300];
 
 export function ReplayControls({ clockS, playing, speed, onPlayPause, onSeek, onSpeed }: Props) {
   const atEnd = clockS >= FULL_TIME_S;

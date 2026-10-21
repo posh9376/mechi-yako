@@ -130,10 +130,50 @@ export interface MatchData {
 
 export type SourceKind = "fixtures" | "api" | "cached";
 
+/** First frame of `/feed`: everything that happened before the requested start clock. */
+export interface FeedSnapshot {
+  clock: string;
+  score: [number, number];
+  events: MatchEvent[];
+  moments: Moment[];
+}
+
+export interface FeedMatchEvent {
+  event: MatchEvent;
+  clock: string;
+  score: [number, number];
+}
+
+export interface FeedDone {
+  events: number;
+  moments: number;
+  score: [number, number];
+}
+
+export interface FeedHandlers {
+  onSnapshot(snapshot: FeedSnapshot): void;
+  onEvent(frame: FeedMatchEvent): void;
+  onMoment(moment: Moment): void;
+  onDone(done: FeedDone): void;
+  onError(message: string): void;
+}
+
+export interface FeedOptions {
+  speed: number;
+  /** Match second to join at; null streams from kick-off. */
+  startS: number | null;
+}
+
 export interface DataSource {
   kind: SourceKind;
   label: string;
+  /** Moments this source serves: live detector output or the fact-layer fixture. */
+  momentSource: MomentSource;
   loadMatch(): Promise<MatchData>;
+  /** Match metadata only; used by live mode so the browser never preloads the timeline. */
+  loadMeta?(): Promise<{ match: MatchMeta }>;
+  /** Opens the server's live SSE feed. Returns a function that closes it. */
+  openFeed?(opts: FeedOptions, handlers: FeedHandlers): () => void;
   /** Returns null when narration is not available for this source. */
   narrate(req: NarrateRequest): Promise<Narration | null>;
 }

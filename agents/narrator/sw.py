@@ -1,5 +1,6 @@
 """Kiswahili narrator. Builds sentences directly from moment facts using lexicon terms;
-it never translates the English narrative. Lines are pending native-speaker review."""
+it never translates the English narrative. Templates were approved by native speakers
+(see ``review`` in lexicon/sw.yaml); changed templates need a fresh review."""
 
 from __future__ import annotations
 

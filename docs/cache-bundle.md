@@ -61,7 +61,7 @@ python -m api.build_cache --out /tmp/bundle.json
     "summary": { "approved": 12, "corrected": 1, "blocked": 0 },
     "claims": [ ClaimDecision, ... ]
   },
-  "lexicon": { "version": 1, "review": "pending" }
+  "lexicon": { "version": 1, "review": "approved" }
 }
 ```
 

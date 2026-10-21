@@ -60,7 +60,7 @@ cd web && npm install && npm run dev
 | Personas | [`agents/persona/`](agents/persona/) | Analyst, casual fan, newcomer, plus the deterministic English writer |
 | Kiswahili narrator | [`agents/narrator/sw.py`](agents/narrator/sw.py) | Native templates in formal, casual and simple registers |
 | Language QA | [`agents/language_qa/`](agents/language_qa/) | Pass/flag badge source |
-| Kiswahili lexicon | [`lexicon/sw.yaml`](lexicon/sw.yaml) | ~50 demo terms, register guides, review **pending** |
+| Kiswahili lexicon | [`lexicon/sw.yaml`](lexicon/sw.yaml) | ~50 demo terms, register guides, **approved** by native speakers |
 | Claims seam | [`api/claims.py`](api/claims.py) | `AgentsClaimChecker` wraps Daniel's verifier; falls back for extra metrics |
 | Web app | [`web/`](web/) | Vite + React + TS match view, persona/language/register switches, QA badge |
 | Cached demo | [`web/public/demo-bundle.json`](web/public/demo-bundle.json) | Shape in [`docs/cache-bundle.md`](docs/cache-bundle.md) |
@@ -93,7 +93,7 @@ Mechi Yako sits on one shared layer of **verified facts** and renders it differe
 
 ### Same moment, three viewers
 
-> Illustrative example using fictional clubs. Kiswahili text pending native-speaker review.
+> Illustrative example using fictional clubs. The lines the app actually shows are listed in [`docs/demo-storyboard.md`](docs/demo-storyboard.md#exact-on-screen-lines-from-the-deterministic-writers).
 
 | Viewer | Output |
 |---|---|
@@ -151,7 +151,7 @@ Most pipelines write in English and translate. Mechi Yako generates in the targe
 - **Registers.** Formal broadcast (*Dakika ya 63, Omar Diallo anafunga bao la kusawazisha…*), casual banter (*Goooli! Omar Diallo anatikisa nyavu…*), and simple explainer for newcomers. The lexicon carries a short style guide and sample lines per register.
 - **Native composition.** [`agents/narrator/sw.py`](agents/narrator/sw.py) builds each sentence from the verified facts with Kiswahili templates. It never sees the English text. Small counts are written as words (*mara tano*), the way a commentator would say them.
 - **Quality loop.** [Language QA](#language-qa-rule) checks every Kiswahili line against the same facts as the English one, including Kiswahili number words and English words leaking into the text.
-- **Native review: pending.** No native speaker has reviewed the lexicon or the generated lines yet, and the lexicon says `review: pending` until one has. See [Known limitations](#known-limitations).
+- **Native review: approved.** Eric Amenya and Daniel Githumbi, both native Kiswahili speakers, reviewed and approved every lexicon term, gloss, register guide and sample line, and the generated demo lines, on 20 Oct 2026. The lexicon records this under `review`. New or changed terms and templates go back to `review: pending` until a native speaker signs them off.
 
 ### Personas and languages
 
@@ -278,11 +278,15 @@ python -m api.build_cache --check
 | How you open it | Data source |
 |---|---|
 | `npm run dev` with no `VITE_API_BASE_URL` | **Fixtures.** Match JSON and fixture moments are bundled into the app. Narrations come from the cached bundle. No backend needed. |
-| `VITE_API_BASE_URL=http://127.0.0.1:8000 npm run dev` | **API.** Live-detected moments (7) and live `/narrate` calls. Copy `web/.env.example` to `web/.env.local` to make this permanent. |
-| API mode plus `?moments=fixture` | API, pinned to the five fixture moments (what the demo video uses). |
+| `VITE_API_BASE_URL=http://127.0.0.1:8000 npm run dev` | **API, Live.** Opens on the server's SSE feed. **Go live** streams from kick-off and **Join at 55′** starts at the press. Pause, Resume, Restart and Speed reopen the stream. A **Live / Replay** toggle switches to the scrubbable replay of the same 7 live moments, starting at the current clock. Narration comes from live `/narrate` calls. Copy `web/.env.example` to `web/.env.local` to make this permanent. |
+| API mode plus `?moments=fixture` | API replay, pinned to the five fixture moments. No Live toggle. |
 | `?demo=cached` | **Cached demo.** Reads `web/public/demo-bundle.json` and makes no API calls. Used when the API is down. |
 
-If the API is unreachable, the error panel offers **Try again** and **Use cached demo**. The header always shows which source is active.
+In Live mode the browser fetches only match metadata up front. Events, score and moments arrive solely through `/feed`, so the screen shows exactly what the server has streamed so far. Resume reconnects from the last event received. The server's `snapshot` frame then replaces the lists, so nothing is duplicated or skipped. If the stream drops, the status pill shows **Disconnected** with **Retry** and **Switch to replay**.
+
+If the API is unreachable at load, the error panel offers **Try again** and **Use cached demo**. The header always shows which source is active.
+
+Stopping the API with one Ctrl+C waits for open feed streams to finish. Press Ctrl+C a second time to exit straight away.
 
 The API reads `MECHI_CORS_ORIGINS` (comma-separated) for allowed origins. The default allows the Vite dev server on `localhost` and `127.0.0.1` port 5173.
 
@@ -298,7 +302,7 @@ All match routes take `match_id` (`m-demo-001` today). Moment routes take `sourc
 | GET | `/matches/{id}/events?start=55:00&end=65:00` | Events in a clock window (inclusive) |
 | GET | `/matches/{id}/state?at=63:00` | Aggregated match state up to a clock, or full time |
 | GET | `/matches/{id}/moments?source=live` | Detected moments with `event_ids` and `stats` |
-| GET | `/matches/{id}/feed?speed=120&instant=false&start=&end=` | SSE stream of `match_event`, `moment` and `done` frames |
+| GET | `/matches/{id}/feed?speed=120&instant=false&start=&end=` | SSE stream. First a `snapshot` frame (`clock`, `score`, and the `events` and `moments` before `start`), then one `match_event` per event (`event`, `clock`, `score`), `moment` frames as the online detector fires, and a final `done`. Moment IDs match `/moments?source=live`. |
 | GET | `/personas` | Personas, languages, registers per language, lexicon version and review status |
 | POST | `/matches/{id}/narrate` | `{moment_id, persona, language, register?, source?}` → narrative, QA result, verification summary |
 | GET | `/matches/{id}/claims?source=live` | Every moment stat as a verified claim, plus a summary |
@@ -356,7 +360,7 @@ mechi-yako/
 - [x] Cached demo bundle for API-down runs (`web/public/demo-bundle.json`)
 - [x] Backend tests (`tests/`)
 - [x] Why? panel / lower third (Daniel; branch `feature/daniel-web-why-overlay`)
-- [ ] Native-speaker review of the Kiswahili lexicon and demo lines
+- [x] Native-speaker review of the Kiswahili lexicon and demo lines (Eric Amenya, Daniel Githumbi; 20 Oct)
 - [ ] Foundry-backed explainer / writer adapters
 - [ ] Deployed demo link
 - [ ] Demo video ([storyboard](docs/demo-storyboard.md))
@@ -385,7 +389,7 @@ mechi-yako/
 
 ## Known limitations
 
-- Kiswahili quality is limited to the lexicon and registers written so far, and none of it has had native-speaker review yet. Other languages and dialects are future work.
+- Kiswahili coverage is limited to the 50 demo-match terms and three registers reviewed so far. Other languages and dialects are future work.
 - Narration is template-based today. Lines are accurate and consistent but less varied than model output.
 - The audit log is in memory and resets when the API restarts.
 - Synthetic matches approximate real football. They are not a statistical model of any real league.

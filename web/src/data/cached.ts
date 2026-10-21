@@ -49,6 +49,7 @@ export function createCachedSource(): DataSource {
   return {
     kind: "cached",
     label: "Cached demo",
+    momentSource: "fixture",
     async loadMatch(): Promise<MatchData> {
       const bundle = await loadBundle();
       return {

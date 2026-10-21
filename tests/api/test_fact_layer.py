@@ -1,5 +1,10 @@
+import asyncio
 import json
+import threading
+import time
 
+from api.feed import stream_match, until_disconnect
+from pipeline.clock import parse_clock
 from tests.conftest import MATCH_ID, MOMENT_TYPES
 
 
@@ -66,6 +71,7 @@ def test_feed_streams_events_moments_and_done(client):
         frames = _read_sse(res)
 
     names = [name for name, _ in frames]
+    assert names[0] == "snapshot"
     assert names[-1] == "done"
     match_events = [payload for name, payload in frames if name == "match_event"]
     moments = [payload for name, payload in frames if name == "moment"]
@@ -84,3 +90,75 @@ def test_feed_full_match_ends_level(client):
     assert frames[-1][0] == "done"
     assert frames[-1][1]["score"] == [1, 1]
     assert frames[-1][1]["events"] == 123
+
+
+def test_feed_snapshot_is_empty_from_kickoff(client):
+    with client.stream("GET", f"/matches/{MATCH_ID}/feed", params={"instant": "true"}) as res:
+        name, snapshot = _read_sse(res)[0]
+    assert name == "snapshot"
+    assert snapshot == {"clock": "0:00", "score": [0, 0], "events": [], "moments": []}
+
+
+def test_feed_snapshot_carries_history_when_joining_mid_match(client):
+    with client.stream(
+        "GET", f"/matches/{MATCH_ID}/feed", params={"instant": "true", "start": "55:00"}
+    ) as res:
+        frames = _read_sse(res)
+
+    name, snapshot = frames[0]
+    assert name == "snapshot"
+    assert snapshot["clock"] == "55:00"
+    assert snapshot["score"] == [1, 0]
+    assert all(parse_clock(e["t"]) < 55 * 60 for e in snapshot["events"])
+    assert len(snapshot["events"]) + frames[-1][1]["events"] == 123
+    assert any(m["type"] == "goal" and parse_clock(m["t_peak"]) < 55 * 60 for m in snapshot["moments"])
+
+    streamed = [payload["id"] for name, payload in frames if name == "moment"]
+    past = [m["id"] for m in snapshot["moments"]]
+    live = [m["id"] for m in client.get(f"/matches/{MATCH_ID}/moments").json()["moments"]]
+    assert not set(past) & set(streamed)
+    assert sorted(past + streamed) == sorted(live)
+
+
+def test_feed_moments_match_live_moments(client):
+    with client.stream("GET", f"/matches/{MATCH_ID}/feed", params={"instant": "true"}) as res:
+        streamed = [payload for name, payload in _read_sse(res) if name == "moment"]
+    live = client.get(f"/matches/{MATCH_ID}/moments").json()["moments"]
+    assert streamed == live
+
+
+def _replay_threads():
+    return [t for t in threading.enumerate() if t.name == "feed-replay"]
+
+
+def _wait_for_replay_threads(count: int) -> int:
+    deadline = time.monotonic() + 2
+    while len(_replay_threads()) > count and time.monotonic() < deadline:
+        time.sleep(0.02)
+    return len(_replay_threads())
+
+
+def test_feed_server_closes_stream_when_client_leaves(match_doc):
+    before = len(_replay_threads())
+
+    async def read_two_then_leave():
+        stream = until_disconnect(
+            stream_match(match_doc, speed=1, instant=False, start_clock="55:00", end_clock=None)
+        )
+        names = [(await stream.__anext__()).split("\n", 1)[0] for _ in range(2)]
+        await stream.aclose()
+        return names
+
+    assert asyncio.run(read_two_then_leave()) == ["event: snapshot", "event: match_event"]
+    assert _wait_for_replay_threads(before) == before
+
+
+def test_feed_replay_thread_stops_when_generator_closes(match_doc):
+    before = len(_replay_threads())
+    frames = stream_match(match_doc, speed=1, instant=False, start_clock="55:00", end_clock=None)
+    assert next(frames).startswith("event: snapshot")
+    assert next(frames).startswith("event: match_event")
+    assert len(_replay_threads()) == before + 1
+
+    frames.close()
+    assert _wait_for_replay_threads(before) == before

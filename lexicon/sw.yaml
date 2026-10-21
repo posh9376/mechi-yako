@@ -1,7 +1,7 @@
 # Kiswahili football lexicon — demo-match terms only (m-demo-001).
 #
-# Every entry and sample is UNREVIEWED until a native Kiswahili speaker signs it off.
-# Set `review: approved` per entry (and `review.status` below) only after that review.
+# Every entry and sample was reviewed and approved by native Kiswahili speakers (see `review`).
+# New or changed entries go back to `review: pending` until a native speaker signs them off.
 #
 # Fields per term:
 #   id        stable key used by the narrator and language QA
@@ -16,9 +16,17 @@ language: sw
 match_scope: m-demo-001
 
 review:
-  status: pending
-  reviewer: null
-  note: Native-speaker review of every term and sample line is required before release.
+  status: approved
+  reviewed_on: 2026-10-20
+  reviewers:
+    - name: Eric Amenya
+      native_speaker: true
+    - name: Daniel Githumbi
+      native_speaker: true
+  scope: >
+    Every term, gloss, register guide and sample line in this file, plus the generated demo
+    narration lines from agents/narrator/sw.py.
+  note: New or changed terms and narrator templates need a fresh native-speaker review.
 
 registers:
   formal:
@@ -97,7 +105,7 @@ terms:
     formal: kufunga bao
     gloss_en: A goal is scored when the whole ball crosses the line between the posts.
     gloss_sw: Bao linapatikana pale mpira wote unapovuka mstari kati ya milingoti ya lango.
-    review: pending
+    review: approved
   - id: equaliser
     en: equaliser
     sw: bao la kusawazisha
@@ -105,7 +113,7 @@ terms:
     en_forms: [equalis, level]
     gloss_en: An equaliser is the goal that makes the score level again.
     gloss_sw: Bao la kusawazisha ni bao linalofanya matokeo kuwa sawa tena.
-    review: pending
+    review: approved
   - id: press
     en: press / pressing
     sw: kubana
@@ -114,7 +122,7 @@ terms:
     formal: kuwabana wapinzani
     gloss_en: Pressing means chasing the opponents high up the pitch to win the ball back quickly.
     gloss_sw: Kubana ni pale wachezaji wanapowakimbilia wapinzani mapema ili kuwanyang'anya mpira haraka.
-    review: pending
+    review: approved
   - id: high_press
     en: high press
     sw: presha ya juu
@@ -122,7 +130,7 @@ terms:
     en_forms: [high press, pressed high, pressing high]
     gloss_en: A high press happens near the opponents' own goal, far from your own.
     gloss_sw: Presha ya juu hufanyika karibu na lango la wapinzani, mbali na lango lako.
-    review: pending
+    review: approved
   - id: turnover
     en: turnover / won the ball
     sw: kunyang'anya mpira
@@ -130,7 +138,7 @@ terms:
     en_forms: [turnover, won the ball, win the ball, winning the ball, giving the ball away, gave the ball away, lost the ball]
     gloss_en: A turnover is when one team loses the ball and the other team takes it.
     gloss_sw: Kunyang'anywa mpira ni pale timu inapoupoteza mpira na wapinzani wake kuuchukua.
-    review: pending
+    review: approved
   - id: tackle
     en: tackle
     sw: kukaba
@@ -139,7 +147,7 @@ terms:
     formal: kukaba kwa mafanikio
     gloss_en: A tackle is when a defender takes the ball off an opponent's feet.
     gloss_sw: Kukaba ni pale beki anapomnyang'anya mpinzani mpira kutoka miguuni mwake.
-    review: pending
+    review: approved
   - id: interception
     en: interception
     sw: kunasa pasi
@@ -147,7 +155,7 @@ terms:
     en_forms: [intercept]
     gloss_en: An interception is cutting out a pass before it reaches its target.
     gloss_sw: Kunasa pasi ni kuikata pasi kabla haijamfikia aliyelengwa.
-    review: pending
+    review: approved
   - id: shot
     en: shot
     sw: shuti
@@ -156,7 +164,7 @@ terms:
     formal: kupiga shuti
     gloss_en: A shot is an attempt to score by striking the ball toward goal.
     gloss_sw: Shuti ni jaribio la kufunga kwa kuupiga mpira kuelekea langoni.
-    review: pending
+    review: approved
   - id: save
     en: save
     sw: kuokoa
@@ -164,7 +172,7 @@ terms:
     en_forms: [save, saved]
     gloss_en: A save is when the goalkeeper stops a shot from going in.
     gloss_sw: Kuokoa ni pale kipa anapozuia shuti lisiingie wavuni.
-    review: pending
+    review: approved
   - id: goalkeeper
     en: goalkeeper
     sw: kipa
@@ -172,7 +180,7 @@ terms:
     en_forms: [goalkeeper, keeper]
     gloss_en: The goalkeeper is the only player allowed to handle the ball in their own box.
     gloss_sw: Kipa ndiye mchezaji pekee anayeruhusiwa kushika mpira ndani ya eneo lake.
-    review: pending
+    review: approved
   - id: momentum
     en: momentum
     sw: mwelekeo wa mchezo
@@ -180,7 +188,7 @@ terms:
     en_forms: [momentum, swung, swing, flipped, turned the game]
     gloss_en: Momentum is which team is on top and pushing the game in its direction.
     gloss_sw: Mwelekeo wa mchezo ni timu ipi iko juu na inaupeleka mchezo upande wake.
-    review: pending
+    review: approved
   - id: possession
     en: possession
     sw: umiliki wa mpira
@@ -188,7 +196,7 @@ terms:
     en_forms: [possession]
     gloss_en: Possession is how much of the time a team has the ball.
     gloss_sw: Umiliki wa mpira ni muda ambao timu inakaa na mpira.
-    review: pending
+    review: approved
   - id: own_half
     en: own half
     sw: nusu yao ya uwanja
@@ -196,226 +204,226 @@ terms:
     en_forms: [own half]
     gloss_en: A team's own half is the half of the pitch with the goal it defends.
     gloss_sw: Nusu ya timu ya uwanja ni upande wenye lango inalolinda.
-    review: pending
+    review: approved
   - id: chance
     en: chance
     sw: nafasi
     sw_forms: [nafasi]
     en_forms: [chance]
-    review: pending
+    review: approved
   - id: score
     en: score
     sw: matokeo
     sw_forms: [matokeo]
     en_forms: [score]
-    review: pending
+    review: approved
   - id: draw
     en: draw / level
     sw: sare
     sw_forms: [sare]
     en_forms: [level, draw]
-    review: pending
+    review: approved
   - id: lead
     en: lead
     sw: kuongoza
     sw_forms: [ongoza]
     en_forms: [lead]
-    review: pending
+    review: approved
   - id: minute
     en: minute
     sw: dakika
     sw_forms: [dakika]
     en_forms: [minute, "'"]
-    review: pending
+    review: approved
   - id: first_half
     en: first half
     sw: kipindi cha kwanza
     sw_forms: [kipindi cha kwanza]
     en_forms: [first half]
-    review: pending
+    review: approved
   - id: second_half
     en: second half
     sw: kipindi cha pili
     sw_forms: [kipindi cha pili]
     en_forms: [second half]
-    review: pending
+    review: approved
   - id: half_time
     en: half time
     sw: mapumziko
     sw_forms: [mapumziko]
     en_forms: [half time, half-time]
-    review: pending
+    review: approved
   - id: full_time
     en: full time
     sw: mwisho wa mchezo
     sw_forms: [mwisho wa mchezo, kipenga cha mwisho]
     en_forms: [full time, full-time]
-    review: pending
+    review: approved
   - id: kickoff
     en: kick-off
     sw: kuanza kwa mchezo
     sw_forms: [kuanza kwa mchezo]
     en_forms: [kick-off, kickoff]
-    review: pending
+    review: approved
   - id: pass
     en: pass
     sw: pasi
     sw_forms: [pasi]
     en_forms: [pass]
-    review: pending
+    review: approved
   - id: assist
     en: assist
     sw: pasi ya bao
     sw_forms: [pasi ya bao]
     en_forms: [assist]
-    review: pending
+    review: approved
   - id: header
     en: header
     sw: kichwa
     sw_forms: [kwa kichwa]
     en_forms: [header]
-    review: pending
+    review: approved
   - id: defender
     en: defender
     sw: beki
     sw_forms: [beki, mlinzi]
     en_forms: [defender]
-    review: pending
+    review: approved
   - id: midfielder
     en: midfielder
     sw: kiungo
     sw_forms: [kiungo]
     en_forms: [midfielder]
-    review: pending
+    review: approved
   - id: forward
     en: forward / striker
     sw: mshambuliaji
     sw_forms: [mshambuliaji]
     en_forms: [forward, striker]
-    review: pending
+    review: approved
   - id: attack
     en: attack
     sw: shambulizi
     sw_forms: [shambulizi, shambulio]
     en_forms: [attack]
-    review: pending
+    review: approved
   - id: defence
     en: defence
     sw: ulinzi
     sw_forms: [ulinzi, safu ya ulinzi]
     en_forms: [defence, defense]
-    review: pending
+    review: approved
   - id: block
     en: block
     sw: kuzuia
     sw_forms: [zuia, zuiwa]
     en_forms: [block]
-    review: pending
+    review: approved
   - id: clearance
     en: clearance
     sw: kuondoa hatari
     sw_forms: [kuondoa hatari]
     en_forms: [clear]
-    review: pending
+    review: approved
   - id: off_target
     en: off target
     sw: nje ya lango
     sw_forms: [nje ya lango, linatoka nje]
     en_forms: [off target, wide]
-    review: pending
+    review: approved
   - id: woodwork
     en: hit the woodwork
     sw: kugonga mwamba
     sw_forms: [mwamba]
     en_forms: [woodwork, post, crossbar]
-    review: pending
+    review: approved
   - id: net
     en: net
     sw: nyavu / wavu
     sw_forms: [nyavu, wavu]
     en_forms: [net]
-    review: pending
+    review: approved
   - id: goal_mouth
     en: goal (frame)
     sw: lango
     sw_forms: [lango]
     en_forms: [goal]
-    review: pending
+    review: approved
   - id: foul
     en: foul
     sw: faulo
     sw_forms: [faulo, kosa]
     en_forms: [foul]
-    review: pending
+    review: approved
   - id: yellow_card
     en: yellow card
     sw: kadi ya njano
     sw_forms: [kadi ya njano]
     en_forms: [yellow card]
-    review: pending
+    review: approved
   - id: red_card
     en: red card
     sw: kadi nyekundu
     sw_forms: [kadi nyekundu]
     en_forms: [red card]
-    review: pending
+    review: approved
   - id: substitution
     en: substitution
     sw: mabadiliko ya mchezaji
     sw_forms: [mabadiliko ya mchezaji, kubadilisha mchezaji]
     en_forms: [substitut]
-    review: pending
+    review: approved
   - id: referee
     en: referee
     sw: mwamuzi
     sw_forms: [mwamuzi, refa]
     en_forms: [referee]
-    review: pending
+    review: approved
   - id: whistle
     en: whistle
     sw: kipenga
     sw_forms: [kipenga, filimbi]
     en_forms: [whistle]
-    review: pending
+    review: approved
   - id: milestone
     en: milestone
     sw: hatua muhimu
     sw_forms: [hatua muhimu]
     en_forms: [milestone]
-    review: pending
+    review: approved
   - id: team
     en: team
     sw: timu
     sw_forms: [timu]
     en_forms: [team, side]
-    review: pending
+    review: approved
   - id: opponent
     en: opponent
     sw: mpinzani
     sw_forms: [mpinzani, wapinzani]
     en_forms: [opponent, opposition]
-    review: pending
+    review: approved
   - id: fans
     en: fans
     sw: mashabiki
     sw_forms: [mashabiki]
     en_forms: [fans]
-    review: pending
+    review: approved
   - id: stadium
     en: stadium
     sw: uwanja
     sw_forms: [uwanja]
     en_forms: [stadium, ground]
-    review: pending
+    review: approved
   - id: pitch
     en: pitch
     sw: uwanja wa kuchezea
     sw_forms: [uwanja]
     en_forms: [pitch]
-    review: pending
+    review: approved
   - id: comeback
     en: comeback
     sw: kurudi mchezoni
     sw_forms: [kurudi mchezoni, wamerudi mchezoni]
     en_forms: [comeback, back into the game, back in the game]
-    review: pending
+    review: approved

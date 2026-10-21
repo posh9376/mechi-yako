@@ -9,10 +9,10 @@ def test_lexicon_size_and_moment_coverage():
     assert set(lex.moment_terms) == MOMENT_TYPES
 
 
-def test_lexicon_is_not_marked_reviewed():
+def test_lexicon_is_approved_by_native_reviewers():
     lex = load_lexicon()
-    assert lex.review_status == "pending"
-    assert all(t.review == "pending" for t in lex.terms.values())
+    assert lex.review_status == "approved"
+    assert all(t.review == "approved" for t in lex.terms.values())
 
 
 def test_formal_samples_use_required_terms():
