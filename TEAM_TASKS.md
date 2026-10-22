@@ -74,10 +74,10 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 - [x] Continue web slice (Why? panel / lower third) — `feature/daniel-web-why-overlay`
 
 ### Fri Oct 23 → Sun Oct 25
-- [ ] **Deploy** API + web to Azure Container Apps
-- [ ] Key Vault / secrets; budget alert; managed identity where practical
-- [ ] Pre-generate & cache demo outputs (with Posh on cache format)
-- [ ] Public link + testing instructions
+- [x] **Deploy** API + web to Azure Container Apps
+- [x] Secrets stay on the Container App; skip budget alert (Azure free trial already has spending limit On)
+- [x] Pre-generate & cache demo outputs (with Posh on cache format)
+- [x] Public link + testing instructions
 - [ ] Feature freeze support (bugs only after Sun evening)
 
 ### Shared with Posh
@@ -130,7 +130,7 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 | Thu Oct 22 | Explainer + verifier libraries | **Daniel** | Posh exposes claims API + tests |
 | Thu Oct 22 | Verified-claims + audit HTTP API | **Posh** | Both (Why? panel) |
 | Sat Oct 24 | Cached bundle format agreed | Both | **Daniel** deploys |
-| Sun Oct 25 | Public link stable | **Daniel** (infra) | Posh films; both smoke-test |
+| Sun Oct 25 | Public link stable | **Daniel** (infra) — live as of 22 Oct | Posh films; both smoke-test |
 
 ---
 

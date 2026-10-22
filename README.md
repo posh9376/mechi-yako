@@ -2,77 +2,28 @@
 
 > **One match, told your way, in your language.**
 
-Mechi Yako ("your match" in Kiswahili) is an AI match-intelligence system. It takes a live stream of football match events and turns it into explainable insight that is personalized for each fan, and written **natively in Kiswahili**, not translated from English after the fact.
+Mechi Yako ("your match" in Kiswahili) turns a live stream of football events into explainable insight for each fan, written **natively in Kiswahili**, not translated from English after the fact.
 
-Built for the Microsoft Premier League Hackathon ("Inside the Game"). All data is **synthetic**, and all clubs and players are **fictional**.
+Built for the Microsoft Premier League Hackathon ("Inside the Game"). All data is **synthetic**. All clubs and players are **fictional**.
 
-<!-- TODO: add demo video link (under 2 minutes) -->
-**Demo video:** _coming soon_ | **Live demo:** _coming soon_
+**Live demo:** https://mechi-yako.icyriver-d1adadda.southafricanorth.azurecontainerapps.io/  
+**Health:** https://mechi-yako.icyriver-d1adadda.southafricanorth.azurecontainerapps.io/health  
+**Demo video:** _coming soon_ (under 2 minutes; see [`docs/demo-storyboard.md`](docs/demo-storyboard.md))
 
 ---
 
-## Current progress (handoff for Eric / Posh)
+## For judges
 
-Owner split: see [`TEAM_TASKS.md`](TEAM_TASKS.md).  
-Working branch for combined API + verifier: **`feature/posh-api-foundation`** (includes Daniel explain/verify from `main`).
+The live app is one container: FastAPI + the Vite build, same origin.
 
-### What Daniel shipped
+1. Open the [live demo](https://mechi-yako.icyriver-d1adadda.southafricanorth.azurecontainerapps.io/).
+2. Click **Join at 55′**. The feed is already 1–0; the press, shot, and equaliser stream in.
+3. Select the **pressure spell**, then switch persona **Analyst → Newcomer**.
+4. Select the **63′ goal**, toggle **English → Kiswahili**, then switch register.
+5. In **Why?**, the strip is Detect → Explain → Verify → Personalize. Open **Broadcast overlay JSON**.
+6. Optional: `GET /docs` and `POST /matches/m-demo-001/claims/check` with `"value": 99` — the verifier returns `"status": "blocked"`.
 
-| When | Piece | Where |
-|---|---|---|
-| Oct 17 | Event schema, demo match, fixtures, realism | `docs/`, `data/`, `generator/` |
-| Oct 17 | Replay, state aggregator, moment detector | `pipeline/` |
-| Oct 18 | **Claim schema** | [`docs/claim-schema.md`](docs/claim-schema.md) |
-| Oct 18 | **Template explainer** | [`agents/explainer.py`](agents/explainer.py) |
-| Oct 18 | **Deterministic verifier** + audit log | [`agents/verifier.py`](agents/verifier.py) |
-| Oct 18 | Explain→verify CLI + **injected wrong-stat** demo | `python -m agents.run_explain_verify` |
-| Oct 21 | **Foundry explainer** (`gpt-5-mini`, template fallback) | [`agents/foundry.py`](agents/foundry.py) |
-
-**Posh has shipped** API, web, lexicon, personas, narrator, QA, tests.  
-**Still for Daniel:** Azure Container Apps deploy.
-
-### Storyline locked in the demo match
-
-1. Blue Herons lead **1–0** at half time (~20′ goal).  
-2. Red Kites **press** from ~**55′** and force turnovers in the Blue Herons half.  
-3. Red Kites **equalise** ~**63′**.  
-4. **RK-4** hits a **5th tackle won** milestone ~**78′**.
-
-### Commands you can run today
-
-```bash
-git checkout feature/posh-api-foundation
-
-python -m generator.build_demo_data
-python -m pipeline.replay --instant
-python -m pipeline.detect
-python -m agents.run_explain_verify
-
-# API + UI
-python -m uvicorn api.main:app --reload --port 8000
-cd web && npm install && npm run dev
-```
-
-### What Posh shipped (Oct 17–18), branch `feature/posh-api-foundation`
-
-| Piece | Where | Notes |
-|---|---|---|
-| Fact-layer HTTP API | [`api/`](api/) | FastAPI: match, events, state, moments, SSE feed, narrate, claims, audit, health |
-| Personas | [`agents/persona/`](agents/persona/) | Analyst, casual fan, newcomer, plus the deterministic English writer |
-| Kiswahili narrator | [`agents/narrator/sw.py`](agents/narrator/sw.py) | Native templates in formal, casual and simple registers |
-| Language QA | [`agents/language_qa/`](agents/language_qa/) | Pass/flag badge source |
-| Kiswahili lexicon | [`lexicon/sw.yaml`](lexicon/sw.yaml) | ~50 demo terms, register guides, **approved** by native speakers |
-| Claims seam | [`api/claims.py`](api/claims.py) | `AgentsClaimChecker` wraps Daniel's verifier; falls back for extra metrics |
-| Web app | [`web/`](web/) | Vite + React + TS match view, persona/language/register switches, QA badge |
-| Cached demo | [`web/public/demo-bundle.json`](web/public/demo-bundle.json) | Shape in [`docs/cache-bundle.md`](docs/cache-bundle.md) |
-| Backend tests | [`tests/`](tests/) | pipeline, generator, API, agents, wrong-stat |
-| Storyboard | [`docs/demo-storyboard.md`](docs/demo-storyboard.md) | Shot list, pitch and submission checklists |
-
-**Merged:** Daniel's claim schema + `agents/verifier` + template explainer are on this branch (from `main`).
-
-**Still for Daniel:**
-- Azure Container Apps deploy
-- Fixture note: `mom-pressure-01` `window_minutes: 7` corrects to **6.7** — see [`docs/cache-bundle.md`](docs/cache-bundle.md#known-data-note-for-daniel)
+If the API is slow to warm, wait until `/health` shows `explainer.warm.running: false`. Cached fallback: add `?demo=cached` to the URL.
 
 ---
 
@@ -123,22 +74,24 @@ flowchart LR
 
 1. **Ingest.** Synthetic events (passes, shots, tackles, possession changes, pressure) arrive on a stream with match metadata.
 2. **Interpret.** Events are aggregated into match state and statistics, and a significance scorer picks out the moments that matter.
-3. **Explain.** An explainer agent writes *why* each moment matters as structured claims, each tied to event IDs.
-4. **Render.** Verified output is emitted as timed, machine-readable JSON that a graphics layer can place alongside a live feed.
-5. **Personalize.** A persona agent rewrites the same verified facts for the chosen expertise level, language and register.
+3. **Explain.** An explainer writes *why* each moment matters as structured claims, each tied to event IDs.
+4. **Render.** Verified output is emitted as timed overlay JSON (`GET /matches/{id}/moments/{moment_id}/overlay`) that a graphics layer can place alongside a live feed. The UI lower third consumes the same shape.
+5. **Personalize.** A persona writer rewrites the same verified facts for the chosen expertise level, language and register.
 
 ### Agents
 
-| Agent | Role |
-|---|---|
-| **Moment Detector** | Scores events and picks out the moments worth explaining. |
-| **Explainer** | Writes grounded, claim-structured explanations from a small event window. |
-| **Verifier** | Recomputes every claim from raw events and approves, corrects or blocks it. |
-| **Persona Writer** | Renders verified facts for a persona (analyst, casual fan, newcomer). |
-| **Kiswahili Narrator** | Composes the narrative natively in Kiswahili using the lexicon and the selected register. |
-| **Language QA** | Checks every narrative against the fact layer (numbers, stats, event IDs, names, lexicon terms) and returns pass or flag. A model back-translation check can plug in behind the same function later. |
+Specialized roles, one chain. Numbers never come from a model.
 
-Today the Persona Writer, Kiswahili Narrator, Language QA and a stand-in Verifier run as deterministic code behind stable interfaces, so the demo works with no model calls. Foundry-backed agents replace them without changing the HTTP shape.
+| Agent | Role | What actually runs |
+|---|---|---|
+| **Moment Detector** | Scores events and picks the moments worth explaining | Deterministic (`pipeline/moments.py`) |
+| **Explainer** | Writes grounded, claim-structured explanations | Template facts; Microsoft Foundry `gpt-5-mini` may rewrite the *why* sentence |
+| **Verifier** | Recomputes every claim from raw events; approves, corrects or blocks | Deterministic (`agents/verifier.py`) — never an LLM |
+| **Persona Writer** | Renders verified facts for analyst, casual fan, or newcomer | Deterministic templates |
+| **Kiswahili Narrator** | Composes the narrative natively from facts + lexicon | Deterministic templates |
+| **Language QA** | Checks numbers, names, event IDs and lexicon terms | Deterministic rules |
+
+Foundry is optional. If the call times out or the number-guard rejects a rewrite, the template sentence is kept. The Why? panel shows which explainer produced the line.
 
 ---
 
@@ -190,6 +143,13 @@ The **Synthetic Match Factory** (`generator/`) produces football-realistic match
 - Seeded runs, so every match is reproducible.
 - A **realism report** that checks each match against plausible ranges, such as pass completion, shots per match and possession spread.
 
+Demo storyline (Blue Herons vs Red Kites):
+
+1. Blue Herons lead **1–0** at half time (~20′ goal).
+2. Red Kites **press** from ~**55′** and force turnovers in the Blue Herons half.
+3. Red Kites **equalise** ~**63′**.
+4. **RK-4** hits a **5th tackle won** milestone ~**78′**.
+
 Example event:
 
 ```json
@@ -218,57 +178,58 @@ AI commentary is only useful on screen if it is right. Mechi Yako uses a **claim
 3. Claims are approved, auto-corrected or blocked, and every decision is logged for audit.
 4. Every persona and language version is checked against the same fact layer, so versions cannot drift apart.
 
+The audit log is in memory for this demo (it resets on restart). That is enough to show a blocked wrong-stat in `/audit`; it is not a durable store.
+
 ---
 
-## Tech stack
+## What we actually run
 
-> Planned stack. Update as the build settles.
-
-| Layer | Technology |
+| Layer | In this submission |
 |---|---|
-| Models and orchestration | Microsoft Foundry, Microsoft Agent Framework |
-| Streaming | Azure Service Bus or Event Hubs |
-| Compute | Azure Container Apps, Azure Functions |
-| State and audit log | Azure Cosmos DB |
-| Speech (optional) | Azure AI Speech |
-| Observability | Application Insights, Foundry tracing |
-| API | FastAPI + uvicorn (`api/`), SSE for the live feed |
-| Front end | React + TypeScript (Vite) in `web/` |
-| Local stream | In-process queue (`pipeline/queue.py`); Service Bus optional later |
+| Models | Microsoft Foundry, `gpt-5-mini`, Responses API — optional Why-sentence rewrite |
+| Compute | Azure Container Apps (`mechi-yako`, South Africa North) |
+| Registry | Azure Container Registry (`mechiyakoacr`) |
+| CI/CD | GitHub Actions: pytest + typecheck + image build on PR; push to ACR and `az containerapp update` on `main` |
+| API | FastAPI + uvicorn, SSE live feed |
+| Front end | React + TypeScript (Vite), served from the same image |
+| Local stream | In-process queue (`pipeline/queue.py`) |
 | Dev tooling | GitHub Copilot Agent Mode |
+
+We do **not** use Cosmos DB, Event Hubs, Fabric, Speech, or Microsoft Agent Framework in this build. Listing them as "planned" would overclaim.
+
+Infra notes and the public URL: [`infra/README.md`](infra/README.md).
 
 ---
 
 ## Getting started
 
-The pipeline and generator use the standard library only and run on Python 3.9+. The API and tests need Python 3.10+ and `requirements-dev.txt`. The web app needs Node 18+.
+Python 3.10+, Node 18+. Or Docker Desktop.
 
 ```bash
-# 1. Clone
 git clone https://github.com/posh9376/mechi-yako.git
 cd mechi-yako
-git checkout feature/daniel-explain-verify   # until merged to main
 
-# 2. Optional Foundry explainer (template still runs without this)
-# cp .env.example .env
-# Set MECHI_EXPLAINER=foundry plus the Azure OpenAI endpoint, key, and gpt-5-mini deployment.
+# One container (API + UI on :8080). Copy .env.example → .env first if you want Foundry.
+docker compose up --build
+```
 
-# 3. Demo data + realism
+Without Docker:
+
+```bash
 python -m generator.build_demo_data
-
-# 4. Pipeline + explain/verify smoke
 python -m pipeline.replay --instant
 python -m pipeline.detect
 python -m agents.run_explain_verify
 
-# 5. API (http://127.0.0.1:8000, interactive docs at /docs)
 pip install -r requirements-dev.txt
 python -m uvicorn api.main:app --reload --port 8000
 
-# 6. Web app (http://127.0.0.1:5173), in a second terminal
 cd web && npm install && npm run dev
+```
 
-# 7. Tests and cache freshness
+Optional Foundry: copy `.env.example` to `.env` and set `MECHI_EXPLAINER=foundry` plus the Azure OpenAI endpoint, key, and `gpt-5-mini` deployment. The template explainer still runs without this.
+
+```bash
 pytest
 python -m api.build_cache --check
 ```
@@ -286,8 +247,6 @@ In Live mode the browser fetches only match metadata up front. Events, score and
 
 If the API is unreachable at load, the error panel offers **Try again** and **Use cached demo**. The header always shows which source is active.
 
-Stopping the API with one Ctrl+C waits for open feed streams to finish. Press Ctrl+C a second time to exit straight away.
-
 The API reads `MECHI_CORS_ORIGINS` (comma-separated) for allowed origins. The default allows the Vite dev server on `localhost` and `127.0.0.1` port 5173.
 
 ### API
@@ -302,6 +261,7 @@ All match routes take `match_id` (`m-demo-001` today). Moment routes take `sourc
 | GET | `/matches/{id}/events?start=55:00&end=65:00` | Events in a clock window (inclusive) |
 | GET | `/matches/{id}/state?at=63:00` | Aggregated match state up to a clock, or full time |
 | GET | `/matches/{id}/moments?source=live` | Detected moments with `event_ids` and `stats` |
+| GET | `/matches/{id}/moments/{moment_id}/overlay?source=live` | Timed overlay JSON: clock, score, text, event IDs, agent chain |
 | GET | `/matches/{id}/feed?speed=120&instant=false&start=&end=` | SSE stream. First a `snapshot` frame (`clock`, `score`, and the `events` and `moments` before `start`), then one `match_event` per event (`event`, `clock`, `score`), `moment` frames as the online detector fires, and a final `done`. Moment IDs match `/moments?source=live`. |
 | GET | `/personas` | Personas, languages, registers per language, lexicon version and review status |
 | POST | `/matches/{id}/narrate` | `{moment_id, persona, language, register?, source?, explain?}` → narrative, QA result, verification summary, and the explanation package unless `explain` is `false` |
@@ -329,52 +289,41 @@ Example:
 curl -s -X POST http://127.0.0.1:8000/matches/m-demo-001/narrate \
   -H 'content-type: application/json' \
   -d '{"moment_id": "mom-goal-equaliser-01", "persona": "casual", "language": "sw", "source": "fixture"}'
+
+curl -s "http://127.0.0.1:8000/matches/m-demo-001/moments/mom-goal-equaliser-01/overlay?source=fixture"
 ```
 
 ### Project structure
 
 ```
 mechi-yako/
-├── data/           # Demo match JSON + fact-layer fixtures (Posh: consume these)
+├── data/           # Demo match JSON + fact-layer fixtures
 ├── docs/           # Event schema, claim schema, cache bundle, storyboard
 ├── generator/      # Scripted demo match builder + realism report
-├── pipeline/       # Replay, state aggregator, moment detector (Daniel)
-├── TEAM_TASKS.md   # Daniel vs Posh ownership
-├── agents/
-│   ├── explainer.py / verifier.py   # Daniel
-│   ├── persona/                     # Eric
-│   ├── narrator/                    # Eric
-│   └── language_qa/                 # Eric
-├── lexicon/        # Kiswahili lexicon (sw.yaml) — Eric
-├── api/            # FastAPI + AgentsClaimChecker — Eric (verifier wired by Daniel)
-├── web/            # Vite + React match view — Eric (Why? panel / lower third: Daniel)
-├── infra/          # (later) Azure deploy — Daniel
-└── tests/          # Backend tests: api, agents, pipeline, generator — Eric
+├── pipeline/       # Replay, state aggregator, moment detector
+├── agents/         # Explainer, verifier, persona, narrator, language QA
+├── lexicon/        # Kiswahili lexicon (sw.yaml)
+├── api/            # FastAPI, claims, overlay JSON, SSE feed
+├── web/            # Vite + React match view, Why? panel, lower third
+├── infra/          # Azure Container Apps notes
+└── tests/          # Backend tests
 ```
+
+Owner split while building: [`TEAM_TASKS.md`](TEAM_TASKS.md).
 
 ---
 
 ## Status
 
-- [x] Event schema defined (`docs/event-schema.md`)
-- [x] Scripted demo match + realism report (`generator/`, `data/matches/`)
-- [x] Fact-layer fixtures for API/UI stubs (`data/fixtures/`)
-- [x] Replay / event stream library (`pipeline/replay.py`)
-- [x] Match-state aggregator (`pipeline/state.py`)
-- [x] Moment detection — deterministic (`pipeline/moments.py`)
-- [x] Claim schema + template explainer + verifier (`agents/`, `docs/claim-schema.md`)
-- [x] Fact-layer HTTP API with SSE live feed (`api/`)
-- [x] Persona engine, three personas (deterministic writer; `agents/persona/`)
-- [x] Kiswahili narration and lexicon (`agents/narrator/`, `lexicon/sw.yaml`)
-- [x] Language QA badge (`agents/language_qa/`)
-- [x] Claims check and audit log (`AgentsClaimChecker` → `agents.verifier`)
-- [x] Front end with persona, language and register switches (`web/`)
-- [x] Cached demo bundle for API-down runs (`web/public/demo-bundle.json`)
-- [x] Backend tests (`tests/`)
-- [x] Why? panel / lower third (Daniel; branch `feature/daniel-web-why-overlay`)
-- [x] Native-speaker review of the Kiswahili lexicon and demo lines (Eric Amenya, Daniel Githumbi; 20 Oct)
-- [x] Foundry-backed explainer (`agents/foundry.py`; writer adapters still deterministic)
-- [ ] Deployed demo link
+- [x] Event schema, synthetic demo match, realism report
+- [x] Replay, match-state aggregator, moment detector
+- [x] Claim schema, template explainer, deterministic verifier
+- [x] Fact-layer HTTP API with SSE live feed
+- [x] Personas, Kiswahili narrator, language QA, native-speaker review (20 Oct)
+- [x] Front end with persona, language and register switches
+- [x] Why? panel, lower third, overlay JSON
+- [x] Foundry-backed explainer (template fallback; numbers stay verified)
+- [x] Docker image, GitHub Actions CI/CD, Azure Container Apps demo
 - [ ] Demo video ([storyboard](docs/demo-storyboard.md))
 
 ---
@@ -390,6 +339,8 @@ mechi-yako/
 | Data innovation | Synthetic Match Factory with a realism report |
 | Responsible, enterprise-ready AI | Verification, audit logging, fairness checks across versions |
 
+Category we are entering: **Best Azure Cloud Native Integration** (Container Apps, ACR, GitHub Actions). The enterprise story is claim-then-verify, not a full data platform.
+
 ---
 
 ## Responsible AI and data notes
@@ -402,10 +353,11 @@ mechi-yako/
 ## Known limitations
 
 - Kiswahili coverage is limited to the 50 demo-match terms and three registers reviewed so far. Other languages and dialects are future work.
-- Narration is template-based today. Lines are accurate and consistent but less varied than model output.
+- Narration is template-based. Lines are accurate and consistent but less varied than model output.
+- Foundry only rewrites the Why sentence. Detector, verifier, persona writer, narrator and QA are deterministic code behind stable interfaces.
 - The audit log is in memory and resets when the API restarts.
+- Player-focus mode and a full-match recap are not in this build.
 - Synthetic matches approximate real football. They are not a statistical model of any real league.
-- `TODO`: add limitations as they are discovered.
 
 ## Roadmap
 
@@ -416,9 +368,9 @@ mechi-yako/
 
 ## License
 
-`TODO`: choose a license (MIT is a common default).
+MIT. See [`LICENSE`](LICENSE).
 
 ## Team
 
-- **Daniel Githumbi** — data, pipeline libraries, infra/deploy; web slices (Why? panel / lower third).
-- **Eric "Posh" Amenya**, Nairobi, Kenya — API, backend tests, personas, Kiswahili, demo video; web slices (match view / switches). Representative / submitter (default).
+- **Daniel Githumbi** — data, pipeline, explainer/verifier, infra/deploy; Why? panel / overlay.
+- **Eric "Posh" Amenya**, Nairobi, Kenya — API, backend tests, personas, Kiswahili, demo video; match view / switches. Representative / submitter (default).

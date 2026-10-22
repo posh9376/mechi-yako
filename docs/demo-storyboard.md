@@ -71,8 +71,8 @@ The written submission and the voice-over together must name each of these.
 
 - [ ] **Microsoft Foundry.** Models and agent orchestration. Say plainly what runs on Foundry at submission time and what runs as a deterministic stand-in (persona writer, Kiswahili narrator, language QA and verifier currently run deterministically behind interfaces a Foundry adapter can replace).
 - [ ] **Agents.** Moment Detector, Explainer, Verifier, Persona Writer, Kiswahili Narrator, Language QA, and how claim-then-verify connects them.
-- [ ] **Azure Container Apps.** Hosts the FastAPI service and the static web build (Daniel's deploy).
-- [ ] **Database.** Azure Cosmos DB for match state and the audit log. Confirm with Daniel whether the audit log is persisted at submission time or still in memory, and word the pitch to match.
+- [ ] **Azure Container Apps.** Hosts the FastAPI service and the static web build. Live: https://mechi-yako.icyriver-d1adadda.southafricanorth.azurecontainerapps.io/
+- [ ] **No separate database.** Match state is in-process; the audit log is in memory and resets on restart. Do not name Cosmos DB.
 - [ ] **Synthetic data.** Fictional clubs and players, seeded generator, realism report.
 - [ ] **Kiswahili-first.** Native generation from facts, curated lexicon, three registers, review status stated honestly.
 - [ ] **Explainability.** Event-ID citations on every line, QA badge, blocked wrong-stat with audit entry.
@@ -83,6 +83,6 @@ The written submission and the voice-over together must name each of these.
 - [ ] Projects page access confirmed for both team members.
 - [x] Native Kiswahili speakers (Eric Amenya, Daniel Githumbi) reviewed and approved every demo line and `lexicon/sw.yaml` on 20 Oct. Lexicon `review.status` is `approved` and the bundle is rebuilt.
 - [ ] Video recorded, under 2:00, uploaded, and the link added to the README.
-- [ ] Live demo link from Daniel's deploy added to the README, and `/health` returns `"status": "ok"` on it.
+- [x] Live demo link from Daniel's deploy added to the README, and `/health` returns `"status": "ok"` on it.
 - [ ] Cached fallback checked on the deployed URL with `?demo=cached`.
 - [ ] Submitted Mon 26 Oct.

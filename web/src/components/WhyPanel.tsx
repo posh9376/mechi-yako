@@ -1,3 +1,4 @@
+import { overlayFor } from "../overlay";
 import type { ExplanationClaimDecision, ExplanationPackage, MatchEvent, Moment } from "../types";
 import type { NarrationState } from "./MomentDetail";
 
@@ -14,8 +15,18 @@ interface Props {
   events: MatchEvent[];
   narration: NarrationState;
   explanation: ExplanationState;
+  score: [number, number];
+  clockS: number;
   onRetryExplanation?: () => void;
 }
+
+type StepStatus = "done" | "running" | "pending" | "error";
+
+type PipelineStep = {
+  id: string;
+  label: string;
+  status: StepStatus;
+};
 
 type ClaimRow = {
   metric: string;
@@ -88,7 +99,15 @@ function resolveEvents(moment: Moment, events: MatchEvent[]): MatchEvent[] {
   return moment.event_ids.map((id) => index.get(id)).filter((e): e is MatchEvent => Boolean(e));
 }
 
-export function WhyPanel({ moment, events, narration, explanation: explanationState, onRetryExplanation }: Props) {
+export function WhyPanel({
+  moment,
+  events,
+  narration,
+  explanation: explanationState,
+  score,
+  clockS,
+  onRetryExplanation,
+}: Props) {
   if (!moment) {
     return (
       <section className="why why--empty" aria-label="Why panel">
@@ -105,6 +124,10 @@ export function WhyPanel({ moment, events, narration, explanation: explanationSt
   const claims = fromExplainer ?? rowsFromStats(moment, narration);
   const verification = narration.status === "ready" ? narration.narration.verification : undefined;
   const summary = explanation?.summary;
+  const overlayText =
+    narration.status === "ready" ? narration.narration.narrative.text : moment.headline.en;
+  const overlay = overlayFor({ moment, score, clockS, text: overlayText });
+  const steps = pipelineSteps(explanationState, narration, Boolean(summary || verification));
 
   return (
     <section className="why" aria-label="Why panel" data-testid="why-panel">
@@ -112,7 +135,7 @@ export function WhyPanel({ moment, events, narration, explanation: explanationSt
         <h2 className="why__title">Why?</h2>
         <p className="why__lede">
           {fromExplainer
-            ? "Explainer claims (Daniel) verified against raw events, then shown to fans."
+            ? "Explainer claims, verified against raw events, then shown to fans."
             : "Every on-screen claim cites raw events and a verifier decision."}
         </p>
         {explanation && (
@@ -140,6 +163,17 @@ export function WhyPanel({ moment, events, narration, explanation: explanationSt
             )}
           </p>
         )}
+        <ol className="why__pipeline" data-testid="why-pipeline">
+          {steps.map((step) => (
+            <li key={step.id} className={`why__step why__step--${step.status}`} data-testid={`why-step-${step.id}`}>
+              <span className="why__step-dot" aria-hidden="true" />
+              <span className="why__step-copy">
+                <span className="why__step-label">{step.label}</span>
+                <span className="why__step-status">{stepStatusLabel(step.status)}</span>
+              </span>
+            </li>
+          ))}
+        </ol>
       </div>
 
       {(summary || verification) && (
@@ -188,7 +222,11 @@ export function WhyPanel({ moment, events, narration, explanation: explanationSt
                   <VerifierBadge status={c.status} label={c.status} />
                   <span className="why__claim-metric">{c.metric}</span>
                   <span className="why__claim-value">{formatValue(c.claimed)}</span>
-                  {c.sentence && <span className="why__claim-sentence">{c.sentence}</span>}
+                  {c.sentence && (
+                    <span className="why__claim-sentence" title={c.sentence}>
+                      {c.sentence}
+                    </span>
+                  )}
                   {c.detail && <span className="why__claim-detail">{c.detail}</span>}
                 </li>
               ))}
@@ -219,8 +257,49 @@ export function WhyPanel({ moment, events, narration, explanation: explanationSt
           </ul>
         </div>
       </div>
+
+      <details className="why__overlay">
+        <summary>Broadcast overlay JSON</summary>
+        <pre data-testid="why-overlay">{JSON.stringify(overlay, null, 2)}</pre>
+      </details>
     </section>
   );
+}
+
+function pipelineSteps(
+  explanationState: ExplanationState,
+  narration: NarrationState,
+  verified: boolean,
+): PipelineStep[] {
+  const explainStatus: StepStatus =
+    explanationState.status === "loading"
+      ? "running"
+      : explanationState.status === "ready"
+        ? "done"
+        : explanationState.status === "error"
+          ? "error"
+          : "pending";
+  const personalizeStatus: StepStatus =
+    narration.status === "loading"
+      ? "running"
+      : narration.status === "ready"
+        ? "done"
+        : narration.status === "error"
+          ? "error"
+          : "pending";
+  return [
+    { id: "detect", label: "Detect", status: "done" },
+    { id: "explain", label: "Explain", status: explainStatus },
+    { id: "verify", label: "Verify", status: verified ? "done" : explainStatus === "done" ? "done" : "pending" },
+    { id: "personalize", label: "Personalize", status: personalizeStatus },
+  ];
+}
+
+function stepStatusLabel(status: StepStatus): string {
+  if (status === "running") return "running";
+  if (status === "error") return "error";
+  if (status === "pending") return "wait";
+  return "done";
 }
 
 function VerifierBadge({
