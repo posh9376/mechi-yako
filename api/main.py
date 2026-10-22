@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Literal
+from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, Literal
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
@@ -15,6 +16,7 @@ from dotenv import load_dotenv
 from agents.foundry import explainer_status
 from api import data
 from api.claims import AgentsClaimChecker, AuditLog, Claim, claims_for_moment, verify_moment
+from api.explanations import ExplanationCache, cache_path_from_env, prewarm_enabled
 from api.feed import stream_match, until_disconnect
 from api.narration import NarrationError, explain_moment, narrate, options
 from pipeline.clock import parse_clock
@@ -35,6 +37,11 @@ class NarrateRequest(BaseModel):
     language: Literal["en", "sw"]
     register_: Literal["formal", "casual", "simple"] | None = Field(None, alias="register")
     source: data.MomentSource = "live"
+    explain: bool = Field(
+        True,
+        description="Include the explainer package for the Why? panel. False returns without waiting on it; "
+        "fetch it from /matches/{id}/moments/{moment_id}/explain instead.",
+    )
 
 
 class ClaimCheckRequest(BaseModel):
@@ -47,14 +54,30 @@ class ClaimCheckRequest(BaseModel):
     )
 
 
+def _prewarm_items() -> list[tuple[str, dict[str, Any]]]:
+    return [
+        (source, moment)
+        for source in ("live", "fixture")
+        for moment in data.get_moments(DEFAULT_MATCH_ID, source)
+    ]
+
+
 def create_app() -> FastAPI:
+    @asynccontextmanager
+    async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+        if prewarm_enabled():
+            app.state.explanations.warm(DEFAULT_MATCH_ID, _prewarm_items())
+        yield
+
     app = FastAPI(
         title="Mechi Yako API",
         version="0.1.0",
         description="Fact-layer API over the synthetic match pipeline.",
+        lifespan=lifespan,
     )
     app.state.checker = AgentsClaimChecker()
     app.state.audit = AuditLog()
+    app.state.explanations = ExplanationCache(cache_path_from_env())
 
     origins = [
         o.strip()
@@ -87,7 +110,7 @@ def create_app() -> FastAPI:
             "events": len(doc["events"]),
             "fixture_moments": len(fixture["moments"]),
             "live_moments": len(data.get_live_moments(DEFAULT_MATCH_ID)),
-            "explainer": explainer_status(),
+            "explainer": {**explainer_status(), **app.state.explanations.stats()},
         }
 
     @app.get("/matches")
@@ -174,6 +197,9 @@ def create_app() -> FastAPI:
                 language=body.language,
                 register=body.register_,
                 checker=app.state.checker,
+                explain=body.explain,
+                source=body.source,
+                cache=app.state.explanations,
             )
         except NarrationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from None
@@ -184,10 +210,12 @@ def create_app() -> FastAPI:
         moment_id: str,
         source: data.MomentSource = Query("fixture"),
     ) -> dict:
-        """Daniel's template explainer + verifier (no persona rewrite)."""
+        """Daniel's explainer + verifier for the Why? panel (no persona rewrite), cached per moment."""
         doc = data.get_match_doc(match_id)
         moment = data.get_moment(match_id, moment_id, source)
-        return explain_moment(moment, doc, app.state.checker)
+        return explain_moment(
+            moment, doc, app.state.checker, source=source, cache=app.state.explanations
+        )
 
     @app.get("/matches/{match_id}/claims")
     def get_claims(match_id: str, source: data.MomentSource = Query("live")) -> dict:

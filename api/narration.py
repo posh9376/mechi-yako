@@ -19,6 +19,7 @@ from agents.persona.facts import UnsupportedMoment
 from agents.persona.writer import TEMPLATES as EN_TEMPLATES
 from agents.persona.writer import write_en
 from api.claims import Claim, ClaimChecker, apply_verification, verify_moment
+from api.explanations import ExplanationCache
 from lexicon import load_lexicon
 
 WRITERS = {"en": write_en, "sw": narrate_sw}
@@ -46,9 +47,16 @@ def explain_moment(
     moment: dict[str, Any],
     doc: dict[str, Any],
     checker: ClaimChecker,
+    *,
+    source: str = "live",
+    cache: ExplanationCache | None = None,
 ) -> dict[str, Any]:
-    """Run Daniel's explainer and verify each emitted claim."""
-    package = make_explainer(doc["match"]["id"]).explain_moment(moment)
+    """Run Daniel's explainer (through ``cache`` when given) and verify each emitted claim."""
+    match_id = doc["match"]["id"]
+    if cache is not None:
+        package = cache.package(match_id, source, moment)
+    else:
+        package = make_explainer(match_id).explain_moment(moment)
     verifications: list[dict[str, Any]] = []
     for raw in package["claims"]:
         claim = Claim(
@@ -80,7 +88,12 @@ def narrate(
     language: str,
     register: str | None,
     checker: ClaimChecker,
+    explain: bool = True,
+    source: str = "live",
+    cache: ExplanationCache | None = None,
 ) -> dict[str, Any]:
+    """Verified narrative plus QA. With ``explain=False`` the Why? panel package is left
+    out, so the response never waits on the explainer model."""
     if persona not in PERSONAS:
         raise NarrationError(f"unknown persona {persona!r}")
     if language not in WRITERS:
@@ -99,9 +112,7 @@ def narrate(
         raise NarrationError(str(exc)) from None
 
     qa = check_narrative(narrative, verified)
-    # Daniel's explainer package for the Why? panel (same checker)
-    explanation = explain_moment(moment, doc, checker)
-    return {
+    result: dict[str, Any] = {
         "narrative": narrative,
         "qa": qa,
         "verification": {
@@ -109,5 +120,8 @@ def narrate(
             "corrected": [d for d in decisions if d["status"] == "corrected"],
             "blocked": blocked,
         },
-        "explanation": explanation,
     }
+    if explain:
+        # Daniel's explainer package for the Why? panel (same checker)
+        result["explanation"] = explain_moment(moment, doc, checker, source=source, cache=cache)
+    return result

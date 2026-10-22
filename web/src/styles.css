@@ -587,6 +587,19 @@ select {
   font-size: 0.8rem;
 }
 
+.why__error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  color: var(--danger);
+}
+
+.why__retry {
+  padding: 3px 10px;
+  font-size: 0.8rem;
+}
+
 .why__claim-metric {
   font-weight: 600;
 }

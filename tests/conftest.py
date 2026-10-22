@@ -20,6 +20,8 @@ MOMENT_TYPES = {
 def _template_explainer(monkeypatch: pytest.MonkeyPatch) -> None:
     """Keep API tests deterministic even when a local .env enables Foundry."""
     monkeypatch.setenv("MECHI_EXPLAINER", "template")
+    monkeypatch.setenv("MECHI_EXPLANATION_CACHE", "")
+    monkeypatch.setenv("MECHI_EXPLAINER_PREWARM", "0")
 
 
 @pytest.fixture()

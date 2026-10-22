@@ -21,6 +21,7 @@ VITE_API_BASE_URL=http://127.0.0.1:8000 npm run dev
 - Browser at 1280×800 or larger, zoom 110–125% so the narration text is readable in the video.
 - Before recording, set Speed to **120×**, persona to **Analyst**, language to **English**, register to **Persona default**.
 - Open `http://127.0.0.1:8000/docs` in a second tab for shot 6.
+- With `MECHI_EXPLAINER=foundry`, wait until `curl -s http://127.0.0.1:8000/health` shows `explainer.warm.done` equal to `total` and `running: false` before recording. Every Why? panel then opens instantly. A restart reuses `.cache/explanations.json`.
 
 ## Shot list
 

@@ -104,6 +104,8 @@ export interface ExplanationPackage {
   verifications: ExplanationClaimDecision[];
   summary: { approved: number; corrected: number; blocked: number };
   explainer: string;
+  /** Set when Foundry failed or was skipped and the template package was used. */
+  foundry_error?: string;
 }
 
 export interface Narration {
@@ -176,4 +178,9 @@ export interface DataSource {
   openFeed?(opts: FeedOptions, handlers: FeedHandlers): () => void;
   /** Returns null when narration is not available for this source. */
   narrate(req: NarrateRequest): Promise<Narration | null>;
+  /**
+   * Why? panel package, fetched apart from `narrate` so the narrative never waits on the
+   * explainer model. Sources without it embed `explanation` in each narration instead.
+   */
+  explain?(momentId: string): Promise<ExplanationPackage>;
 }

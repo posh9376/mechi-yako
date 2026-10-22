@@ -1,12 +1,20 @@
-import type { ExplanationClaimDecision, MatchEvent, Moment } from "../types";
+import type { ExplanationClaimDecision, ExplanationPackage, MatchEvent, Moment } from "../types";
 import type { NarrationState } from "./MomentDetail";
 
 const CONTEXT_KEYS = new Set(["zone", "player", "metric", "milestone"]);
+
+export type ExplanationState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "ready"; explanation: ExplanationPackage }
+  | { status: "error"; message: string };
 
 interface Props {
   moment: Moment | null;
   events: MatchEvent[];
   narration: NarrationState;
+  explanation: ExplanationState;
+  onRetryExplanation?: () => void;
 }
 
 type ClaimRow = {
@@ -17,9 +25,9 @@ type ClaimRow = {
   sentence?: string;
 };
 
-function rowsFromExplanation(narration: NarrationState): ClaimRow[] | null {
-  if (narration.status !== "ready" || !narration.narration.explanation) return null;
-  const { claims, verifications } = narration.narration.explanation;
+function rowsFromExplanation(explanation: ExplanationPackage | undefined): ClaimRow[] | null {
+  if (!explanation) return null;
+  const { claims, verifications } = explanation;
   const byMetric = new Map(verifications.map((v) => [v.metric, v]));
   return claims.map((c) => {
     const v: ExplanationClaimDecision | undefined = byMetric.get(c.metric);
@@ -80,7 +88,7 @@ function resolveEvents(moment: Moment, events: MatchEvent[]): MatchEvent[] {
   return moment.event_ids.map((id) => index.get(id)).filter((e): e is MatchEvent => Boolean(e));
 }
 
-export function WhyPanel({ moment, events, narration }: Props) {
+export function WhyPanel({ moment, events, narration, explanation: explanationState, onRetryExplanation }: Props) {
   if (!moment) {
     return (
       <section className="why why--empty" aria-label="Why panel">
@@ -92,9 +100,9 @@ export function WhyPanel({ moment, events, narration }: Props) {
 
   const cited = resolveEvents(moment, events);
   const missing = moment.event_ids.length - cited.length;
-  const fromExplainer = rowsFromExplanation(narration);
+  const explanation = explanationState.status === "ready" ? explanationState.explanation : undefined;
+  const fromExplainer = rowsFromExplanation(explanation);
   const claims = fromExplainer ?? rowsFromStats(moment, narration);
-  const explanation = narration.status === "ready" ? narration.narration.explanation : undefined;
   const verification = narration.status === "ready" ? narration.narration.verification : undefined;
   const summary = explanation?.summary;
 
@@ -110,6 +118,26 @@ export function WhyPanel({ moment, events, narration }: Props) {
         {explanation && (
           <p className="why__source muted" data-testid="why-explainer-source">
             {explanation.explainer} · {explanation.summary_en}
+          </p>
+        )}
+        {explanation?.foundry_error && (
+          <p className="why__source muted" data-testid="why-explainer-fallback" title={explanation.foundry_error}>
+            Foundry unavailable, showing template sentences.
+          </p>
+        )}
+        {explanationState.status === "loading" && (
+          <p className="why__source muted" data-testid="why-explaining">
+            Explaining why this matters…
+          </p>
+        )}
+        {explanationState.status === "error" && (
+          <p className="why__source why__error" role="alert">
+            Could not load the explanation: {explanationState.message}
+            {onRetryExplanation && (
+              <button type="button" className="btn why__retry" onClick={onRetryExplanation}>
+                Retry
+              </button>
+            )}
           </p>
         )}
       </div>
