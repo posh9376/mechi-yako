@@ -59,7 +59,7 @@ export function LiveControls({
 
   return (
     <>
-      <section className="live" aria-label="Live feed controls">
+      <section className="live transport" aria-label="Live feed controls">
         <span className={`live__pill live__pill--${status}`} data-testid="live-status" aria-live="polite">
           {pillText(status, clockS)}
         </span>

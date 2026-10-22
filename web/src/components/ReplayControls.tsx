@@ -14,7 +14,7 @@ export const SPEEDS = [30, 60, 120, 300];
 export function ReplayControls({ clockS, playing, speed, onPlayPause, onSeek, onSpeed }: Props) {
   const atEnd = clockS >= FULL_TIME_S;
   return (
-    <section className="replay" aria-label="Replay controls">
+    <section className="replay transport" aria-label="Replay controls">
       <button type="button" className="btn btn--primary" onClick={onPlayPause}>
         {playing ? "Pause" : atEnd ? "Replay" : "Play"}
       </button>

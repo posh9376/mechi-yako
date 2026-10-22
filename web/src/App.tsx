@@ -261,40 +261,48 @@ export function App({ source, onUseCached }: Props) {
 
   return (
     <main className="app">
-      <div className="app__brand">
-        <span className="app__logo">Mechi Yako</span>
-        <span className="app__tagline">One match, told your way, in your language.</span>
-        <span className="app__source" data-testid="source">
-          {sourceLabel}
-        </span>
+      <div className="topbar">
+        <div className="topbar__brand">
+          <span className="app__logo">Mechi Yako</span>
+          <span className="app__tagline">One match, told your way, in your language.</span>
+        </div>
+        <div className="topbar__right">
+          {modeToggle}
+          <span className="app__source" data-testid="source" title={sourceLabel}>
+            {sourceLabel}
+          </span>
+        </div>
       </div>
-      <ScoreBar match={match} score={score} clockS={shownClockS} />
-      {modeToggle && <div className="modebar">{modeToggle}</div>}
-      {isLive ? (
-        <LiveControls
-          status={live.status}
-          clockS={live.clockS}
-          speed={speed}
-          error={live.error}
-          onStart={live.start}
-          onPause={live.pause}
-          onResume={live.resume}
-          onSpeed={setSpeed}
-          onSwitchToReplay={switchToReplay}
-        />
-      ) : (
-        <ReplayControls
-          clockS={clockS}
-          playing={playing}
-          speed={speed}
-          onPlayPause={handlePlayPause}
-          onSeek={(c) => {
-            setPlaying(false);
-            setClockS(c);
-          }}
-          onSpeed={setSpeed}
-        />
-      )}
+
+      <section className="hero" aria-label="Match">
+        <ScoreBar match={match} score={score} clockS={shownClockS} />
+        {isLive ? (
+          <LiveControls
+            status={live.status}
+            clockS={live.clockS}
+            speed={speed}
+            error={live.error}
+            onStart={live.start}
+            onPause={live.pause}
+            onResume={live.resume}
+            onSpeed={setSpeed}
+            onSwitchToReplay={switchToReplay}
+          />
+        ) : (
+          <ReplayControls
+            clockS={clockS}
+            playing={playing}
+            speed={speed}
+            onPlayPause={handlePlayPause}
+            onSeek={(c) => {
+              setPlaying(false);
+              setClockS(c);
+            }}
+            onSpeed={setSpeed}
+          />
+        )}
+      </section>
+
       <Switches
         persona={persona}
         language={language}
@@ -303,29 +311,37 @@ export function App({ source, onUseCached }: Props) {
         onLanguage={setLanguage}
         onRegister={setRegister}
       />
+
       <div className="app__columns">
-        <MomentList
-          moments={visibleMoments}
-          totalMoments={isLive ? null : (pending.data as MatchData).moments.length}
-          waitingMessage={live.status === "idle" ? "Press Go live to start the match feed." : undefined}
-          selectedId={selectedId}
-          language={language}
-          onSelect={setSelectedId}
-        />
-        <MomentDetail
-          moment={selected}
-          language={language}
-          narration={narration}
-          onRetry={() => setNarrationNonce((n) => n + 1)}
-        />
+        <div className="feed">
+          <h2 className="feed__title">
+            Moments <span className="feed__count">{visibleMoments.length}</span>
+          </h2>
+          <MomentList
+            moments={visibleMoments}
+            totalMoments={isLive ? null : (pending.data as MatchData).moments.length}
+            waitingMessage={live.status === "idle" ? "Press Go live to start the match feed." : undefined}
+            selectedId={selectedId}
+            language={language}
+            onSelect={setSelectedId}
+          />
+        </div>
+        <div className="stage">
+          <MomentDetail
+            moment={selected}
+            language={language}
+            narration={narration}
+            onRetry={() => setNarrationNonce((n) => n + 1)}
+          />
+          <WhyPanel
+            moment={selected}
+            events={events}
+            narration={narration}
+            explanation={explanation}
+            onRetryExplanation={() => setExplanationNonce((n) => n + 1)}
+          />
+        </div>
       </div>
-      <WhyPanel
-        moment={selected}
-        events={events}
-        narration={narration}
-        explanation={explanation}
-        onRetryExplanation={() => setExplanationNonce((n) => n + 1)}
-      />
       <LowerThird
         match={match}
         score={score}
