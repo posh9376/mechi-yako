@@ -25,7 +25,8 @@ export function MomentDetail({ moment, language, narration, onRetry }: Props) {
   if (!moment) {
     return (
       <section className="detail detail--empty" aria-label="Moment detail">
-        <p>Select a moment to read it your way.</p>
+        <p className="detail__empty-title">Your match, your language</p>
+        <p>Select a moment from the timeline. Or join at 55′ and watch the press arrive live.</p>
       </section>
     );
   }
@@ -40,7 +41,9 @@ export function MomentDetail({ moment, language, narration, onRetry }: Props) {
         {narration.status === "ready" && <QaBadge narration={narration.narration} />}
       </div>
 
-      {narration.status === "loading" && <p className="detail__text detail__text--muted">Writing…</p>}
+      {narration.status === "loading" && (
+        <p className="detail__text detail__text--muted detail__text--writing">Writing…</p>
+      )}
 
       {narration.status === "error" && (
         <div className="detail__error" role="alert">

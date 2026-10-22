@@ -52,6 +52,10 @@ export function App({ source, onUseCached }: Props) {
   const [explanationNonce, setExplanationNonce] = useState(0);
   const live = useLiveFeed(source, speed);
 
+  useEffect(() => {
+    document.documentElement.lang = language;
+  }, [language]);
+
   const loadMeta = useCallback(() => {
     if (!source.loadMeta) return;
     setMeta({ status: "loading" });
@@ -219,7 +223,14 @@ export function App({ source, onUseCached }: Props) {
   if (pending.status === "idle" || pending.status === "loading") {
     return (
       <main className="app app--center">
-        <p className="muted">Loading match…</p>
+        <div className="boot">
+          <span className="app__logo">Mechi Yako</span>
+          <p className="boot__tagline">One match, told your way, in your language.</p>
+          <div className="boot__bar" aria-hidden="true">
+            <span />
+          </div>
+          <p className="muted">Loading match…</p>
+        </div>
       </main>
     );
   }
@@ -338,18 +349,20 @@ export function App({ source, onUseCached }: Props) {
             events={events}
             narration={narration}
             explanation={explanation}
+            score={score}
+            clockS={shownClockS}
             onRetryExplanation={() => setExplanationNonce((n) => n + 1)}
+          />
+          <LowerThird
+            match={match}
+            score={score}
+            clockS={shownClockS}
+            moment={selected}
+            language={language}
+            narration={narration}
           />
         </div>
       </div>
-      <LowerThird
-        match={match}
-        score={score}
-        clockS={shownClockS}
-        moment={selected}
-        language={language}
-        narration={narration}
-      />
       <footer className="app__footer">
         Synthetic data · fictional clubs and players · Kiswahili reviewed by native speakers
       </footer>

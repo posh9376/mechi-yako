@@ -42,7 +42,7 @@ export function MomentList({ moments, totalMoments, waitingMessage, selectedId, 
           <li key={m.id}>
             <button
               type="button"
-              className={m.id === selectedId ? "moment is-selected" : "moment"}
+              className={`moment moment--${m.team}${m.id === selectedId ? " is-selected" : ""}`}
               aria-pressed={m.id === selectedId}
               onClick={() => onSelect(m.id)}
             >
@@ -53,7 +53,7 @@ export function MomentList({ moments, totalMoments, waitingMessage, selectedId, 
                 </span>
                 <span className="moment__headline">{m.headline.en}</span>
               </span>
-              <span className="moment__team">{m.team}</span>
+              <span className={`moment__team moment__team--${m.team}`}>{m.team}</span>
             </button>
           </li>
         ))}

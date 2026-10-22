@@ -13,37 +13,48 @@ interface Props {
 export function Switches({ persona, language, register, onPersona, onLanguage, onRegister }: Props) {
   return (
     <section className="switches" aria-label="Viewer settings">
-      <div className="segmented" role="radiogroup" aria-label="Persona">
-        {PERSONA_OPTIONS.map((p) => (
-          <button
-            key={p.id}
-            type="button"
-            role="radio"
-            aria-checked={persona === p.id}
-            title={p.hint}
-            className={persona === p.id ? "segmented__item is-active" : "segmented__item"}
-            onClick={() => onPersona(p.id)}
-          >
-            {p.label}
-          </button>
-        ))}
+      <p className="switches__kicker">Watch as</p>
+      <div className="switches__group">
+        <span className="switches__label" id="persona-label">
+          Persona
+        </span>
+        <div className="segmented" role="radiogroup" aria-labelledby="persona-label">
+          {PERSONA_OPTIONS.map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              role="radio"
+              aria-checked={persona === p.id}
+              title={p.hint}
+              className={persona === p.id ? "segmented__item is-active" : "segmented__item"}
+              onClick={() => onPersona(p.id)}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
       </div>
-      <div className="segmented" role="radiogroup" aria-label="Language">
-        {LANGUAGE_OPTIONS.map((l) => (
-          <button
-            key={l.id}
-            type="button"
-            role="radio"
-            aria-checked={language === l.id}
-            className={language === l.id ? "segmented__item is-active" : "segmented__item"}
-            onClick={() => onLanguage(l.id)}
-          >
-            {l.label}
-          </button>
-        ))}
+      <div className="switches__group">
+        <span className="switches__label" id="language-label">
+          Language
+        </span>
+        <div className="segmented" role="radiogroup" aria-labelledby="language-label">
+          {LANGUAGE_OPTIONS.map((l) => (
+            <button
+              key={l.id}
+              type="button"
+              role="radio"
+              aria-checked={language === l.id}
+              className={language === l.id ? "segmented__item is-active" : "segmented__item"}
+              onClick={() => onLanguage(l.id)}
+            >
+              {l.label}
+            </button>
+          ))}
+        </div>
       </div>
       <label className="switches__register">
-        Register
+        <span className="switches__label">Register</span>
         <select value={register} onChange={(e) => onRegister(e.target.value as Register | "auto")}>
           {REGISTER_OPTIONS.map((r) => (
             <option key={r.id} value={r.id}>

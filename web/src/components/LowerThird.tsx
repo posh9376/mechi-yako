@@ -1,5 +1,6 @@
 import { formatClock, minuteMark } from "../clock";
 import { momentTypeLabel } from "../labels";
+import { overlayFor } from "../overlay";
 import type { Language, MatchMeta, Moment } from "../types";
 import type { NarrationState } from "./MomentDetail";
 
@@ -21,15 +22,7 @@ export function LowerThird({ match, score, clockS, moment, language, narration }
       ? narration.narration.narrative.text
       : moment.headline.en;
 
-  const overlay = {
-    t: formatClock(clockS),
-    score: { home: score[0], away: score[1] },
-    team: moment.team,
-    moment_type: moment.type,
-    moment_id: moment.id,
-    event_ids: moment.event_ids,
-    text: line,
-  };
+  const overlay = overlayFor({ moment, score, clockS, text: line });
 
   return (
     <aside
@@ -49,7 +42,7 @@ export function LowerThird({ match, score, clockS, moment, language, narration }
         </div>
         <div className="lower-third__copy">
           <span className="lower-third__eyebrow">
-            {momentTypeLabel(moment.type, language)} · {moment.team}
+            Overlay · {momentTypeLabel(moment.type, language)} · {moment.team}
           </span>
           <p className="lower-third__text" lang={narration.status === "ready" ? language : "en"}>
             {line}

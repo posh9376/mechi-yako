@@ -21,6 +21,7 @@ from api.claims import AgentsClaimChecker, AuditLog, Claim, claims_for_moment, v
 from api.explanations import ExplanationCache, cache_path_from_env, prewarm_enabled
 from api.feed import stream_match, until_disconnect
 from api.narration import NarrationError, explain_moment, narrate, options
+from api.overlay import overlay_for_moment
 from pipeline.clock import parse_clock
 from pipeline.replay import MatchReplay
 from pipeline.state import MatchStateAggregator
@@ -218,6 +219,17 @@ def create_app() -> FastAPI:
         return explain_moment(
             moment, doc, app.state.checker, source=source, cache=app.state.explanations
         )
+
+    @app.get("/matches/{match_id}/moments/{moment_id}/overlay")
+    def get_overlay(
+        match_id: str,
+        moment_id: str,
+        source: data.MomentSource = Query("live"),
+    ) -> dict:
+        """Timed overlay JSON for a graphics layer (score, text, event IDs, agent chain)."""
+        doc = data.get_match_doc(match_id)
+        moment = data.get_moment(match_id, moment_id, source)
+        return overlay_for_moment(match_id, moment, doc)
 
     @app.get("/matches/{match_id}/claims")
     def get_claims(match_id: str, source: data.MomentSource = Query("live")) -> dict:
