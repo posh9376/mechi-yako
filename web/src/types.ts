@@ -74,7 +74,7 @@ export interface VerificationSummary {
   blocked: string[];
 }
 
-/** Daniel's TemplateExplainer output, verified for the Why? panel. */
+/** Daniel's explainer output (template numbers, optional Foundry sentences). */
 export interface ExplanationClaimDecision {
   moment_id: string;
   metric: string;

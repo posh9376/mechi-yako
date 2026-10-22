@@ -23,12 +23,13 @@ Working branch for combined API + verifier: **`feature/posh-api-foundation`** (i
 | Oct 17 | Event schema, demo match, fixtures, realism | `docs/`, `data/`, `generator/` |
 | Oct 17 | Replay, state aggregator, moment detector | `pipeline/` |
 | Oct 18 | **Claim schema** | [`docs/claim-schema.md`](docs/claim-schema.md) |
-| Oct 18 | **Template explainer** (no Foundry yet) | [`agents/explainer.py`](agents/explainer.py) |
+| Oct 18 | **Template explainer** | [`agents/explainer.py`](agents/explainer.py) |
 | Oct 18 | **Deterministic verifier** + audit log | [`agents/verifier.py`](agents/verifier.py) |
 | Oct 18 | Explain→verify CLI + **injected wrong-stat** demo | `python -m agents.run_explain_verify` |
+| Oct 21 | **Foundry explainer** (`gpt-5-mini`, template fallback) | [`agents/foundry.py`](agents/foundry.py) |
 
 **Posh has shipped** API, web, lexicon, personas, narrator, QA, tests.  
-**Still for Daniel:** Why? panel / lower third, infra deploy, optional Foundry explainer.
+**Still for Daniel:** Azure Container Apps deploy.
 
 ### Storyline locked in the demo match
 
@@ -70,9 +71,7 @@ cd web && npm install && npm run dev
 **Merged:** Daniel's claim schema + `agents/verifier` + template explainer are on this branch (from `main`).
 
 **Still for Daniel:**
-- Why? panel / lower third in `web/`
 - Azure Container Apps deploy
-- Optional Foundry-backed explainer
 - Fixture note: `mom-pressure-01` `window_minutes: 7` corrects to **6.7** — see [`docs/cache-bundle.md`](docs/cache-bundle.md#known-data-note-for-daniel)
 
 ---
@@ -250,8 +249,9 @@ git clone https://github.com/posh9376/mechi-yako.git
 cd mechi-yako
 git checkout feature/daniel-explain-verify   # until merged to main
 
-# 2. (Later) Azure / Foundry — not needed for template explainer or verifier
+# 2. Optional Foundry explainer (template still runs without this)
 # cp .env.example .env
+# Set MECHI_EXPLAINER=foundry plus the Azure OpenAI endpoint, key, and gpt-5-mini deployment.
 
 # 3. Demo data + realism
 python -m generator.build_demo_data
@@ -361,7 +361,7 @@ mechi-yako/
 - [x] Backend tests (`tests/`)
 - [x] Why? panel / lower third (Daniel; branch `feature/daniel-web-why-overlay`)
 - [x] Native-speaker review of the Kiswahili lexicon and demo lines (Eric Amenya, Daniel Githumbi; 20 Oct)
-- [ ] Foundry-backed explainer / writer adapters
+- [x] Foundry-backed explainer (`agents/foundry.py`; writer adapters still deterministic)
 - [ ] Deployed demo link
 - [ ] Demo video ([storyboard](docs/demo-storyboard.md))
 

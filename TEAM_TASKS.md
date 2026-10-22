@@ -70,7 +70,7 @@ If you need a change in the other person’s tree: open a PR, do not push straig
 - [x] Claim schema + template explainer (Foundry swap later) — started early Oct 18
 - [x] Verifier (approve / correct / block + audit log) as library
 - [ ] Coordinate with Posh so injected wrong-stat test lives under his `tests/`
-- [ ] Foundry-backed explainer (optional upgrade)
+- [x] Foundry-backed explainer (optional upgrade) — `agents/foundry.py`; numbers stay template-verified
 - [x] Continue web slice (Why? panel / lower third) — `feature/daniel-web-why-overlay`
 
 ### Fri Oct 23 → Sun Oct 25
