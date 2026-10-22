@@ -1,0 +1,12 @@
+services:
+  app:
+    build: .
+    image: mechi-yako:local
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      MECHI_CORS_ORIGINS: http://127.0.0.1:8080,http://localhost:8080
+      # Faster first smoke: skip Foundry pre-warm. Turn on for the Azure deploy.
+      MECHI_EXPLAINER_PREWARM: "0"

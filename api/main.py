@@ -4,11 +4,13 @@ from __future__ import annotations
 
 import os
 from contextlib import asynccontextmanager
+from pathlib import Path
 from typing import Any, AsyncIterator, Literal
 
 from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field
 
 from dotenv import load_dotenv
@@ -252,7 +254,16 @@ def create_app() -> FastAPI:
         entries = app.state.audit.entries(match_id)
         return {"match_id": match_id, "count": len(entries), "entries": entries}
 
+    _mount_web(app)
     return app
+
+
+def _mount_web(app: FastAPI) -> None:
+    """Serve the Vite build from the same origin as the API when `web/dist` exists."""
+    dist = Path(os.environ.get("MECHI_WEB_DIST") or data.ROOT / "web" / "dist")
+    if not dist.is_dir():
+        return
+    app.mount("/", StaticFiles(directory=dist, html=True), name="web")
 
 
 def _validate_clock(value: str | None, name: str) -> None:
