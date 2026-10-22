@@ -744,7 +744,7 @@ select {
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
-  color: var(--danger);
+  color: var(--bad);
 }
 
 .why__retry {
