@@ -1,5 +1,6 @@
 import type {
   DataSource,
+  ExplanationPackage,
   FeedHandlers,
   FeedOptions,
   MatchData,
@@ -67,8 +68,14 @@ export function createApiSource(baseUrl: string, momentSource: MomentSource = "l
           language: req.language,
           register: req.register,
           source: momentSource,
+          explain: false,
         }),
       });
+    },
+    explain(momentId: string): Promise<ExplanationPackage> {
+      return getJson<ExplanationPackage>(
+        `${matchUrl}/moments/${encodeURIComponent(momentId)}/explain?source=${momentSource}`,
+      );
     },
   };
 }

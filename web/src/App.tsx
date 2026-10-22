@@ -7,7 +7,7 @@ import { MomentList } from "./components/MomentList";
 import { ReplayControls } from "./components/ReplayControls";
 import { ScoreBar } from "./components/ScoreBar";
 import { Switches } from "./components/Switches";
-import { WhyPanel } from "./components/WhyPanel";
+import { WhyPanel, type ExplanationState } from "./components/WhyPanel";
 import { useLiveFeed } from "./live/useLiveFeed";
 import type { DataSource, Language, MatchData, MatchMeta, Moment, PersonaId, Register } from "./types";
 
@@ -48,6 +48,8 @@ export function App({ source, onUseCached }: Props) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [narration, setNarration] = useState<NarrationState>({ status: "idle" });
   const [narrationNonce, setNarrationNonce] = useState(0);
+  const [fetchedExplanation, setFetchedExplanation] = useState<ExplanationState>({ status: "idle" });
+  const [explanationNonce, setExplanationNonce] = useState(0);
   const live = useLiveFeed(source, speed);
 
   const loadMeta = useCallback(() => {
@@ -137,6 +139,36 @@ export function App({ source, onUseCached }: Props) {
       cancelled = true;
     };
   }, [source, selectedMomentId, persona, language, register, narrationNonce]);
+
+  // The explanation depends only on the moment, so persona/language switches reuse it.
+  useEffect(() => {
+    if (!selectedMomentId || !source.explain) {
+      setFetchedExplanation({ status: "idle" });
+      return;
+    }
+    let cancelled = false;
+    setFetchedExplanation({ status: "loading" });
+    source
+      .explain(selectedMomentId)
+      .then((explanation) => {
+        if (!cancelled) setFetchedExplanation({ status: "ready", explanation });
+      })
+      .catch((err: unknown) => {
+        if (!cancelled) setFetchedExplanation({ status: "error", message: errorMessage(err) });
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [source, selectedMomentId, explanationNonce]);
+
+  const embedded = narration.status === "ready" ? narration.narration.explanation : undefined;
+  const explanation: ExplanationState = source.explain
+    ? fetchedExplanation
+    : embedded
+      ? { status: "ready", explanation: embedded }
+      : narration.status === "loading"
+        ? { status: "loading" }
+        : { status: "idle" };
 
   const handlePlayPause = () => {
     if (playing) {
@@ -287,7 +319,13 @@ export function App({ source, onUseCached }: Props) {
           onRetry={() => setNarrationNonce((n) => n + 1)}
         />
       </div>
-      <WhyPanel moment={selected} events={events} narration={narration} />
+      <WhyPanel
+        moment={selected}
+        events={events}
+        narration={narration}
+        explanation={explanation}
+        onRetryExplanation={() => setExplanationNonce((n) => n + 1)}
+      />
       <LowerThird
         match={match}
         score={score}

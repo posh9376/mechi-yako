@@ -296,7 +296,7 @@ All match routes take `match_id` (`m-demo-001` today). Moment routes take `sourc
 
 | Method | Route | Returns |
 |---|---|---|
-| GET | `/health` | `status`, loaded `match_id`, `schema_version`, event count, fixture and live moment counts |
+| GET | `/health` | `status`, loaded `match_id`, `schema_version`, event count, fixture and live moment counts, and `explainer` (mode, active explainer, `cached` count, `warm` progress) |
 | GET | `/matches` | Available match IDs |
 | GET | `/matches/{id}` | Match metadata, `schema_version`, event count |
 | GET | `/matches/{id}/events?start=55:00&end=65:00` | Events in a clock window (inclusive) |
@@ -304,12 +304,24 @@ All match routes take `match_id` (`m-demo-001` today). Moment routes take `sourc
 | GET | `/matches/{id}/moments?source=live` | Detected moments with `event_ids` and `stats` |
 | GET | `/matches/{id}/feed?speed=120&instant=false&start=&end=` | SSE stream. First a `snapshot` frame (`clock`, `score`, and the `events` and `moments` before `start`), then one `match_event` per event (`event`, `clock`, `score`), `moment` frames as the online detector fires, and a final `done`. Moment IDs match `/moments?source=live`. |
 | GET | `/personas` | Personas, languages, registers per language, lexicon version and review status |
-| POST | `/matches/{id}/narrate` | `{moment_id, persona, language, register?, source?}` → narrative, QA result, verification summary |
+| POST | `/matches/{id}/narrate` | `{moment_id, persona, language, register?, source?, explain?}` → narrative, QA result, verification summary, and the explanation package unless `explain` is `false` |
+| GET | `/matches/{id}/moments/{moment_id}/explain?source=fixture` | Explanation package for one moment: why-it-matters sentence, claims with evidence, `explainer` used |
 | GET | `/matches/{id}/claims?source=live` | Every moment stat as a verified claim, plus a summary |
 | POST | `/matches/{id}/claims/check` | `{moment_id, metric, value, event_ids?, source?}` → approved, corrected or blocked; written to the audit log |
 | GET | `/matches/{id}/audit` | Audit log entries for the match (in memory, reset on restart) |
 
 Unknown match or moment IDs return 404. Malformed clocks and invalid persona, language or register values return 422.
+
+#### Foundry explainer latency
+
+With `MECHI_EXPLAINER=foundry`, the web app keeps narration and explanation on separate requests. It calls `/narrate` with `explain: false`, so the narration renders straight away. It then fetches `/explain` for the Why? panel, which shows the verified stats while the sentence loads.
+
+- **One call per moment.** Explanations depend only on the moment, so the API caches them by match, source, moment content, model and prompt version. Persona, language and register switches reuse the cached package. Concurrent requests for the same moment share one Foundry call.
+- **Pre-warm.** At startup the API explains every live and fixture moment in the background, three at a time. `/health` reports progress under `explainer.warm`. The cache persists to `.cache/explanations.json`, so a restart serves explanations immediately.
+- **Bounded calls.** Each call uses minimal reasoning effort, no SDK retries and an overall deadline (`MECHI_FOUNDRY_TIMEOUT_S`, default 10 s). On a timeout or error the template sentence is served and the Why? panel says so. After an error the API uses the template for 30 seconds before trying Foundry again. Failed explanations are never cached.
+- **Number guard.** A rewritten sentence may only use numbers present in the moment's stats, clocks, headline or template sentence. Otherwise the template sentence is kept and the claim is listed in `foundry_rejected`.
+
+Measured on `gpt-5-mini`: a cold explanation takes about 2–3 s (about 5 s for the first call while the connection opens). Once cached, `/explain` and `/narrate` return in a few milliseconds. The tuning variables are listed in [`.env.example`](.env.example).
 
 Example:
 
