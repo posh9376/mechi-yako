@@ -11,26 +11,28 @@ concurrency:
 
 permissions:
   contents: read
-  packages: write
-  id-token: write
 
 env:
-  IMAGE: ghcr.io/${{ github.repository }}
+  ACR_NAME: mechiyakoacr
+  IMAGE: mechiyakoacr.azurecr.io/mechi-yako
+  RESOURCE_GROUP: inside_the_game_hackathon
+  CONTAINER_APP: mechi-yako
 
 jobs:
   publish:
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    outputs:
-      digest: ${{ steps.push.outputs.digest }}
     steps:
       - uses: actions/checkout@v4
-      - uses: docker/setup-buildx-action@v3
+      - uses: azure/login@v2
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: mechiyakoacr.azurecr.io
+          username: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientId }}
+          password: ${{ fromJSON(secrets.AZURE_CREDENTIALS).clientSecret }}
+      - uses: docker/setup-buildx-action@v3
       - uses: docker/metadata-action@v5
         id: meta
         with:
@@ -39,10 +41,10 @@ jobs:
             type=sha,format=short,prefix=sha-
             type=raw,value=latest,enable={{is_default_branch}}
       - uses: docker/build-push-action@v6
-        id: push
         with:
           context: .
           push: true
+          platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
@@ -50,22 +52,19 @@ jobs:
 
   deploy:
     needs: publish
-    if: ${{ vars.AZURE_RESOURCE_GROUP != '' && vars.AZURE_CONTAINER_APP != '' }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
       - uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
       - uses: azure/cli@v2
         with:
           inlineScript: |
             set -euo pipefail
-            IMAGE="ghcr.io/${GITHUB_REPOSITORY}:sha-${GITHUB_SHA::7}"
-            echo "Updating ${{ vars.AZURE_CONTAINER_APP }} to $IMAGE"
+            IMAGE="mechiyakoacr.azurecr.io/mechi-yako:sha-${GITHUB_SHA::7}"
+            echo "Updating mechi-yako to $IMAGE"
             az containerapp update \
-              --name "${{ vars.AZURE_CONTAINER_APP }}" \
-              --resource-group "${{ vars.AZURE_RESOURCE_GROUP }}" \
+              --name mechi-yako \
+              --resource-group inside_the_game_hackathon \
               --image "$IMAGE"
