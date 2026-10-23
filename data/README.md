@@ -1,11 +1,11 @@
-# Data (Daniel)
+# Data
 
 Synthetic match events and fact-layer fixtures. No real clubs, players, or footage.
 
 | Path | Purpose | Consumer |
 |---|---|---|
 | `matches/*.json` | Full match documents (schema v1) | Pipeline libraries, realism report |
-| `fixtures/*.moments.json` | Ranked moments with `event_ids` + `stats` | **Posh** API stubs and UI until live pipeline exists |
+| `fixtures/*.moments.json` | Ranked moments with `event_ids` + `stats` | API, UI, and the cached demo bundle |
 
 ## Demo match
 

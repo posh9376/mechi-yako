@@ -1,4 +1,4 @@
-"""Agents: explainer + verifier (Daniel); persona, narrator, language QA (Posh)."""
+"""Agents: explainer, verifier, persona, narrator, language QA."""
 
 from agents.explainer import TemplateExplainer
 from agents.foundry import FoundryExplainer, make_explainer

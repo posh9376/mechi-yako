@@ -1,1 +1,1 @@
-"""Mechi Yako HTTP API (Posh). Wraps the pipeline libraries; run with ``uvicorn api.main:app``."""
+"""Mechi Yako HTTP API. Wraps the pipeline libraries; run with ``uvicorn api.main:app``."""

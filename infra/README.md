@@ -36,20 +36,6 @@ No secrets required.
 
 1. Sign in to Azure with `AZURE_CREDENTIALS`.
 2. Build `linux/amd64` and push to `mechiyakoacr.azurecr.io/mechi-yako` (`latest` and `sha-<short>`).
-3. Update Container App `mechi-yako` in `inside_the_game_hackathon` to that image.
+3. Update Container App `mechi-yako` in resource group `inside_the_game_hackathon` to that image.
 
-Foundry keys stay on the Container App as secrets. They never go in the image or in git.
-
-### GitHub secret
-
-One secret, `AZURE_CREDENTIALS`. Create the principal on your machine (do not commit the JSON):
-
-```bash
-az ad sp create-for-rbac \
-  --name github-mechi-yako-cd \
-  --role contributor \
-  --scopes "$(az group show -n inside_the_game_hackathon --query id -o tsv)" \
-  --sdk-auth
-```
-
-Paste the JSON into GitHub → Settings → Secrets and variables → Actions → `AZURE_CREDENTIALS`. Then Actions → CD → Run workflow. Foundry keys stay on the Container App; this principal only pushes images and updates the app.
+Foundry keys stay on the Container App as secrets. They never go in the image or in git. CD authenticates with the GitHub Actions secret `AZURE_CREDENTIALS`.

@@ -1,6 +1,6 @@
 """Claims seam: recompute fact-layer stats from raw events and keep an audit log.
 
-Default checker is ``AgentsClaimChecker``, which wraps Daniel's ``agents.verifier.ClaimVerifier``
+Default checker is ``AgentsClaimChecker``, which wraps ``agents.verifier.ClaimVerifier``
 and falls back to ``DeterministicClaimChecker`` for API metrics the library does not cover yet
 (e.g. ``window_minutes``, ``scorer``).
 """
