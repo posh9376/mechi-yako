@@ -213,7 +213,7 @@ def create_app() -> FastAPI:
         moment_id: str,
         source: data.MomentSource = Query("fixture"),
     ) -> dict:
-        """Daniel's explainer + verifier for the Why? panel (no persona rewrite), cached per moment."""
+        """Explainer + verifier for the Why? panel (no persona rewrite), cached per moment."""
         doc = data.get_match_doc(match_id)
         moment = data.get_moment(match_id, moment_id, source)
         return explain_moment(

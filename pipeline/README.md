@@ -1,7 +1,7 @@
-# Pipeline (Daniel)
+# Pipeline
 
-Importable libraries for ingest/interpret. **HTTP API is Posh’s** (`api/`).  
-These modules are **deterministic** (no Foundry / no agents yet).
+Importable libraries for ingest and interpret. The HTTP layer lives in `api/`.  
+These modules are **deterministic** (no model calls).
 
 ## Quick smoke
 
@@ -49,8 +49,4 @@ for event in replay.iter_events():
 
 `pressure_spell` · `shot_after_turnovers` · `momentum_swing` · `goal` · `player_milestone`
 
-Output shape matches `docs/event-schema.md` fact-layer fixtures (Posh can compare to `data/fixtures/`).
-
-## Next (agentic — see team plan)
-
-Explainer + verifier libraries (**Wed–Thu Oct 21–22**), then Foundry models.
+Output shape matches `docs/event-schema.md` fact-layer fixtures in `data/fixtures/`.

@@ -1,4 +1,4 @@
-"""Match pipeline libraries (Daniel) — replay, state, moments. HTTP lives in api/ (Posh)."""
+"""Match pipeline libraries — replay, state, moments. HTTP lives in api/."""
 
 from pipeline.queue import EventSink, InProcessEventQueue
 

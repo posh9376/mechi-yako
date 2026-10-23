@@ -1,6 +1,6 @@
-# Generator (Daniel)
+# Generator
 
-v1 ships a **hand-scripted** demo match and a **realism report**. A full possession simulator can come later; do not block fixtures on it.
+v1 ships a **hand-scripted** demo match and a **realism report**. A full possession simulator can come later.
 
 ```bash
 # From repo root

@@ -1,6 +1,5 @@
 # Event schema v1
 
-Frozen target: **Sun Oct 18 EOD** (change only by agreement between Daniel and Posh).  
 All clubs and players are **fictional**. Times use `MM:SS` from kick-off of that half’s clock as wall-clock match time (`0:00`–`45:00` first half, `45:00`–`90:00` second half; stoppage may exceed).
 
 ## Match document
@@ -91,7 +90,7 @@ Every event in `events[]`:
 
 ## Fact-layer fixture (for API / UI)
 
-Files under `data/fixtures/` expose moments Posh can serve before the live pipeline exists.
+Files under `data/fixtures/` pin ranked moments (`event_ids` + `stats`) for the API, UI, and cached demo.
 
 ### Moment object
 

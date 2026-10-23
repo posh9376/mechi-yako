@@ -1,4 +1,4 @@
-"""Kiswahili football lexicon (Posh). Data lives in ``sw.yaml``."""
+"""Kiswahili football lexicon. Data lives in ``sw.yaml``."""
 
 from __future__ import annotations
 

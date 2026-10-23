@@ -309,8 +309,6 @@ mechi-yako/
 └── tests/          # Backend tests
 ```
 
-Owner split while building: [`TEAM_TASKS.md`](TEAM_TASKS.md).
-
 ---
 
 ## Status
@@ -373,4 +371,4 @@ MIT. See [`LICENSE`](LICENSE).
 ## Team
 
 - **Daniel Githumbi** — data, pipeline, explainer/verifier, infra/deploy; Why? panel / overlay.
-- **Eric "Posh" Amenya**, Nairobi, Kenya — API, backend tests, personas, Kiswahili, demo video; match view / switches. Representative / submitter (default).
+- **Eric "Posh" Amenya**, Nairobi, Kenya — API, backend tests, personas, Kiswahili, demo video; match view / switches.

@@ -1,6 +1,6 @@
 # Cached demo bundle
 
-The cached bundle is one static JSON file that lets the web app run the whole demo with the API down. Daniel's deploy (Sat 24 Oct) ships it as a static asset next to the built web app.
+The cached bundle is one static JSON file that lets the web app run the whole demo with the API down. The Container App image ships it as a static asset next to the built web app.
 
 | | |
 |---|---|
@@ -116,7 +116,7 @@ Same shape as the entries `GET /matches/{id}/claims` returns.
 
 `status` is `approved`, `corrected` (float within 0.5 of the recomputed value) or `blocked`.
 
-## Known data note for Daniel
+## Known data note
 
 The fixture moment `mom-pressure-01` has `stats.window_minutes: 7`. Its cited events span 55:05–61:45, which is 6 min 40 s (6.7 minutes). The verifier marks this claim `corrected` (7 → 6.7), which accounts for the single `corrected` in the summary. Narrations use 6.7, and the UI shows "verifier corrected window_minutes 7 → 6.7". If the fixture is changed to 6.7, rebuild the bundle and the summary becomes 13 approved.
 

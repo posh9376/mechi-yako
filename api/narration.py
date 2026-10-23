@@ -1,9 +1,9 @@
 """Narration pipeline: explain → verify → persona/Kiswahili write → language QA.
 
-Daniel's explainer builds structured claims (template numbers, optional Foundry
-sentences); the claim checker verifies them and the fact-layer stats used by
-Eric's writers. Both land in the HTTP response so the web Why? panel can show
-explainer output (not only the CLI).
+The explainer builds structured claims (template numbers, optional Foundry
+sentences). The claim checker verifies them and the fact-layer stats used by
+the persona and Kiswahili writers. Both land in the HTTP response so the Why?
+panel can show explainer output (not only the CLI).
 """
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ def explain_moment(
     source: str = "live",
     cache: ExplanationCache | None = None,
 ) -> dict[str, Any]:
-    """Run Daniel's explainer (through ``cache`` when given) and verify each emitted claim."""
+    """Run the explainer (through ``cache`` when given) and verify each emitted claim."""
     match_id = doc["match"]["id"]
     if cache is not None:
         package = cache.package(match_id, source, moment)
@@ -122,6 +122,6 @@ def narrate(
         },
     }
     if explain:
-        # Daniel's explainer package for the Why? panel (same checker)
+        # Explainer package for the Why? panel (same checker)
         result["explanation"] = explain_moment(moment, doc, checker, source=source, cache=cache)
     return result
