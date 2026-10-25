@@ -8,7 +8,7 @@ Built for the Microsoft Premier League Hackathon ("Inside the Game"). All data i
 
 **Live demo:** https://mechi-yako.icyriver-d1adadda.southafricanorth.azurecontainerapps.io/  
 **Health:** https://mechi-yako.icyriver-d1adadda.southafricanorth.azurecontainerapps.io/health  
-**Demo video:** _coming soon_ (under 2 minutes; see [`docs/demo-storyboard.md`](docs/demo-storyboard.md))
+**Demo video:** https://youtu.be/tbePQz-7YOQ?si=tUGtBmYtyPSwJXmt
 
 ---
 
